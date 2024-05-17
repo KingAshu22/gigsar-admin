@@ -7,6 +7,7 @@ import {
   S3Client,
   PutObjectCommand,
   ListObjectsCommand,
+  DeleteObjectCommand, // Added for deleting the image from S3
 } from "@aws-sdk/client-s3";
 import { nanoid } from "nanoid";
 import { fromBase64 } from "@aws-sdk/util-base64";
@@ -17,6 +18,7 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
   const [zoom, setZoom] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [showCroppedImage, setShowCroppedImage] = useState(false);
+  const [awsLink, setAwsLink] = useState(null);
 
   const onFileDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -103,6 +105,10 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
       const putObjectCommand = new PutObjectCommand(uploadParams);
       await s3Client.send(putObjectCommand);
 
+      setAwsLink(
+        `https://${process.env.NEXT_PUBLIC_BUCKET}.s3.${process.env.NEXT_PUBLIC_REGION}.amazonaws.com/${folderName}/${fileName}`
+      );
+
       return `https://${process.env.NEXT_PUBLIC_BUCKET}.s3.${process.env.NEXT_PUBLIC_REGION}.amazonaws.com/${folderName}/${fileName}`;
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -112,6 +118,45 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
 
   const handleSave = () => {
     handleProfileUpload(cropData);
+  };
+
+  const handleDeleteImage = async () => {
+    try {
+      // Delete the image from AWS S3
+      await deleteImageFromS3(awsLink);
+
+      // Reset component state
+      setImageSrc(null);
+      setCropData(null);
+      setShowModal(false);
+      setShowCroppedImage(false);
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
+  };
+
+  const deleteImageFromS3 = async (imageUrl) => {
+    // Extract the key from the image URL
+    const objectKey = new URL(imageUrl).pathname.slice(1);
+
+    // Create S3 client
+    const s3Client = new S3Client({
+      region: process.env.NEXT_PUBLIC_REGION,
+      credentials: {
+        accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY,
+        secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY,
+      },
+    });
+
+    const deleteParams = {
+      Bucket: process.env.NEXT_PUBLIC_BUCKET,
+      Key: objectKey,
+    };
+
+    const deleteCommand = new DeleteObjectCommand(deleteParams);
+
+    // Send delete object command to S3
+    await s3Client.send(deleteCommand);
   };
 
   return (
@@ -134,14 +179,23 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
       )}
       {showCroppedImage && cropData && (
         <>
-          <label className="block text-sm font-medium text-gray-700">
-            Profile Pic
-          </label>
-          <img
-            src={cropData}
-            alt="Cropped Image"
-            className="mb-4 rounded-lg max-w-36"
-          />
+          <div className="relative mb-4">
+            <button
+              className="absolute top-3 font-bold text-2xl left-32 bg-red-500 w-8 h-8 text-white pb-1 rounded-full"
+              onClick={handleDeleteImage}
+              type="button"
+            >
+              x
+            </button>
+            <label className="block text-sm font-medium text-gray-700">
+              Profile Pic
+            </label>
+            <img
+              src={cropData}
+              alt="Cropped Image"
+              className="mb-4 rounded-lg max-w-36"
+            />
+          </div>
         </>
       )}
       {showModal && imageSrc && (
@@ -163,12 +217,26 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
               value={zoom}
               onChange={(e) => setZoom(parseFloat(e.target.value))}
             />
-            <button
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={handleSave}
-            >
-              Save
-            </button>
+            <div className="flex justify-between">
+              <button
+                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                type="button"
+                onClick={() => {
+                  // Reset image selection state
+                  setImageSrc(null);
+                  setShowModal(false);
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                type="button"
+                onClick={handleSave}
+              >
+                Save
+              </button>
+            </div>
           </div>
         </div>
       )}
