@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { MicVocal, TriangleAlert, UserRound } from "lucide-react";
+import { BadgePlus, MicVocal, TriangleAlert, UserRound } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -49,6 +49,18 @@ export default function Home() {
             <p className="text-body-bold">40</p>
           </CardContent>
         </Card>
+
+        <Link href="/registration">
+          <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+              <CardTitle>Artist Registration Form</CardTitle>
+              <BadgePlus className="max-sm:hidden" />
+            </CardHeader>
+            <CardContent>
+              <p className="text-body-bold">108</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </div>
   );
