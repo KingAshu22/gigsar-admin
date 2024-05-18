@@ -11,6 +11,9 @@ import instrumentOptions from "./constants/instruments";
 import languageOptions from "./constants/languages";
 import { Button } from "@/components/ui/button";
 import PhotoUploader from "@/app/_components/PhotoUploader";
+import { useRouter } from "next/navigation";
+import Modal from "@/app/_components/Modal";
+import { HashLoader } from "react-spinners";
 
 const ArtistRegistration = () => {
   const [artistName, setArtistName] = useState();
@@ -43,8 +46,11 @@ const ArtistRegistration = () => {
   const [musicTraining, setMusicTraining] = useState("");
   const [aboutArtist, setAboutArtist] = useState("");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [isCroppingComplete, setIsCroppingComplete] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [shouldShowLoader, setShouldShowLoader] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const router = useRouter();
 
   // useEffect(() => {
   //   if (
@@ -58,6 +64,10 @@ const ArtistRegistration = () => {
   //     setEmail(user.emailAddresses[0].emailAddress);
   //   }
   // }, [user]);
+
+  const formatArtistName = (name) => {
+    return name.toLowerCase().replace(/ /g, "-");
+  };
 
   const handleEventTypeChange = (event) => {
     const selectedEventType = event.target.value;
@@ -126,20 +136,17 @@ const ArtistRegistration = () => {
     }
   };
 
-  const handleSave = async () => {
-    // Handle saving the cropped image
-    // For demonstration, let's log the cropped image data
-    setShowModal(false); // Close the modal after saving
-    setShowCroppedImage(true); // Show the cropped image
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setShowConfirmationModal(true);
+    setError(null);
+    setSuccess(false);
   };
 
   const handleConfirmSubmit = async () => {
     try {
+      setShowConfirmationModal(false);
+      setIsLoading(true);
       // Handle the submission of form data
       const formData = {
         artistName,
@@ -172,24 +179,22 @@ const ArtistRegistration = () => {
         aboutArtist,
       };
 
-      console.log(formData);
-
-      const response = await axios.post(
+      const response = axios.post(
         `${process.env.NEXT_PUBLIC_API}/artist-registration`,
-        formData
+        formData,
+        { withCredentials: true }
       );
-
-      setShowConfirmationModal(false);
-      setShowSuccessModal(true);
     } catch (error) {
-      console.error("Error submitting form:", error);
       // Handle error
+      console.error("Error submitting form:", error);
+      setError(error.message || "An error occurred during submission.");
+    } finally {
+      // Reset loading state
+      setTimeout(() => {
+        setIsLoading(false);
+        setSuccess(true);
+      }, 3000);
     }
-  };
-
-  const handleModalClose = () => {
-    setShowSuccessModal(false);
-    // Redirect to home page or perform any other action
   };
 
   return (
@@ -207,6 +212,7 @@ const ArtistRegistration = () => {
             type="text"
             id="artistName"
             value={artistName}
+            required
             onChange={(e) => setArtistName(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
@@ -299,7 +305,7 @@ const ArtistRegistration = () => {
             required
           >
             <option value="">Select Artist Type</option>
-            <option value="singer-band">Singer/Live Bamd</option>
+            <option value="singer-band">Singer/Live Band</option>
             <option value="Musician">Musician</option>
             <option value="DJ">DJ</option>
           </select>
@@ -685,25 +691,65 @@ const ArtistRegistration = () => {
         </button>
       </form>
       {/* Confirmation modal */}
-      {showConfirmationModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <p>Are you sure you want to submit the form?</p>
-            <button onClick={handleConfirmSubmit}>Yes</button>
-            <button onClick={() => setShowConfirmationModal(false)}>No</button>
-          </div>
+      <Modal
+        isOpen={showConfirmationModal}
+        onClose={() => setShowConfirmationModal(false)}
+        title="Are you sure you want to submit the form?"
+        description={`This will create a profile for ${artistName}`}
+      >
+        <div className="flex justify-between">
+          <button
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            type="button"
+            onClick={() => setShowConfirmationModal(false)}
+          >
+            Cancel
+          </button>
+          <button
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            type="button"
+            onClick={handleConfirmSubmit}
+          >
+            Submit
+          </button>
         </div>
-      )}
+      </Modal>
 
-      {/* Success modal */}
-      {showSuccessModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <p>Success! Your form has been submitted.</p>
-            <button onClick={handleModalClose}>Back to home page</button>
-          </div>
+      <Modal isOpen={isLoading} title="Submitting Form...">
+        <div className="flex justify-center items-center">
+          <HashLoader color="#dc2626" size={80} />
         </div>
-      )}
+      </Modal>
+
+      {error && <p className="error">{error}</p>}
+      <Modal
+        isOpen={success}
+        onClose={() => setSuccess(false)}
+        title="Artist Registered"
+        description={`${artistName}'s Form has been successfully saved.`}
+      >
+        <div className="flex justify-between">
+          <button
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            type="button"
+            onClick={() =>
+              window.open(
+                `https://gigsar.com/artist/${formatArtistName(artistName)}`,
+                "_blank"
+              )
+            }
+          >
+            View Page
+          </button>
+          <button
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            type="button"
+            onClick={() => router.push("/")}
+          >
+            Dashboard
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };
