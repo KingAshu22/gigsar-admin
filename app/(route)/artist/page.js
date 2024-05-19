@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
+import { HashLoader } from "react-spinners";
 
 export default function Page() {
   const [artists, setArtists] = useState([]);
@@ -23,12 +24,20 @@ export default function Page() {
       console.error("Error fetching artists:", error);
       setError("Failed to fetch artists. Please try again later.");
     } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
     }
   };
 
   if (loading) {
-    return <div className="container mx-auto py-10">Loading...</div>;
+    return (
+      <div className="container mx-auto py-10">
+        <div className="flex justify-center items-center p-10">
+          <HashLoader color="#dc2626" size={80} />
+        </div>
+      </div>
+    );
   }
 
   if (error) {
