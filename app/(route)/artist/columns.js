@@ -20,7 +20,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
 import { Badge } from "@/components/ui/badge";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -32,59 +31,95 @@ const toggleShowGigsar = async (_id, setShowGigsar) => {
       { _id },
       { withCredentials: true }
     );
-    const updatedArtist = response.data.artist;
-    setShowGigsar(updatedArtist.showGigsar);
+    setShowGigsar(response.data.artist.showGigsar);
   } catch (error) {
     console.error("Error changing status:", error);
   }
 };
 
-export const columns = (updateArtistStatus) => [
+const ShowGigsarCell = ({ initialShowGigsar, name, _id }) => {
+  const [showGigsar, setShowGigsar] = useState(initialShowGigsar);
+
+  useEffect(() => {
+    setShowGigsar(initialShowGigsar);
+  }, [initialShowGigsar]);
+
+  return (
+    <span>
+      <AlertDialog>
+        <AlertDialogTrigger>
+          {showGigsar ? (
+            <Badge variant="secondary">Live</Badge>
+          ) : (
+            <Badge variant="destructive">Hidden</Badge>
+          )}
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {showGigsar
+                ? `Are you sure you want to hide ${name}?`
+                : `Are you sure you want to make ${name}'s profile live?`}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {showGigsar
+                ? `This action will hide ${name} from the Gigsar website. No one can view ${name}'s profile on the Gigsar website.`
+                : `This action will make ${name}'s profile live on the Gigsar website. Everyone can view ${name}'s profile on the Gigsar website.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => toggleShowGigsar(_id, setShowGigsar)}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </span>
+  );
+};
+
+export const columns = [
   {
     accessorKey: "code",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          ID
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        ID
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
   },
   {
     accessorKey: "profilePic",
     header: "Profile",
-    cell: ({ row }) => {
-      const { profilePic } = row.original;
-      return (
-        <div className="flex items-center">
-          <div className="h-10 w-10 rounded-lg overflow-hidden border-2 border-black">
-            <img
-              src={profilePic}
-              alt="Profile"
-              className="h-full w-full object-cover"
-            />
-          </div>
+    cell: ({ row }) => (
+      <div className="flex items-center">
+        <div className="h-10 w-10 rounded-lg overflow-hidden border-2 border-black">
+          <img
+            src={row.original.profilePic}
+            alt="Profile"
+            className="h-full w-full object-cover"
+          />
         </div>
-      );
-    },
+      </div>
+    ),
   },
   {
     accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Name
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
   },
   {
     accessorKey: "artistType",
@@ -94,52 +129,9 @@ export const columns = (updateArtistStatus) => [
     accessorKey: "showGigsar",
     header: "Status",
     cell: ({ row }) => {
-      const { showGigsar: initialShowGigsar, name, _id } = row.original;
-      const [showGigsar, setShowGigsar] = useState(initialShowGigsar);
-
-      useEffect(() => {
-        setShowGigsar(initialShowGigsar);
-      }, [initialShowGigsar]);
-
+      const { showGigsar, name, _id } = row.original;
       return (
-        <span>
-          <AlertDialog>
-            <AlertDialogTrigger>
-              {showGigsar ? (
-                <Badge variant="secondary">Live</Badge>
-              ) : (
-                <Badge variant="destructive">Hidden</Badge>
-              )}
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  {showGigsar
-                    ? `Are you sure to hide ${name}?`
-                    : `Are you sure to make ${name}'s Profile Live?`}
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  {showGigsar
-                    ? `This action will hide ${name} from Gigsar Website. No one can
-                  view ${name}'s profile on Gigsar Website.`
-                    : `This action will make ${name}'s profile Live on Gigsar Website. Everyone can
-                  view ${name}'s profile on Gigsar Website.`}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => {
-                    toggleShowGigsar(_id, setShowGigsar);
-                    updateArtistStatus(_id, !showGigsar);
-                  }}
-                >
-                  Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </span>
+        <ShowGigsarCell initialShowGigsar={showGigsar} name={name} _id={_id} />
       );
     },
   },
@@ -147,12 +139,14 @@ export const columns = (updateArtistStatus) => [
     id: "actions",
     cell: ({ row }) => {
       const artist = row.original;
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
+            <Button
+              variant="ghost"
+              className="h-8 w-8 p-0"
+              aria-label="Open menu"
+            >
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -180,47 +174,3 @@ export const columns = (updateArtistStatus) => [
     },
   },
 ];
-
-const ArtistTable = () => {
-  const [artists, setArtists] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const fetchArtists = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/artist`);
-      const filteredArtists = response.data.filter(
-        (artist) => artist.showGigsar
-      );
-      setArtists(filteredArtists);
-    } catch (error) {
-      console.error("Error fetching artists:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateArtistStatus = (id, newStatus) => {
-    setArtists((prevArtists) =>
-      prevArtists.map((artist) =>
-        artist._id === id ? { ...artist, showGigsar: newStatus } : artist
-      )
-    );
-  };
-
-  useEffect(() => {
-    fetchArtists();
-  }, []);
-
-  return (
-    <div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <Table columns={columns(updateArtistStatus)} data={artists} />
-      )}
-    </div>
-  );
-};
-
-export default ArtistTable;

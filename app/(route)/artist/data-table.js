@@ -29,8 +29,6 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 
-// Import the DataTableToolbar component
-
 export function DataTable({ columns, data }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -76,20 +74,16 @@ export function DataTable({ columns, data }) {
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
+              .map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                >
+                  {column.id}
+                </DropdownMenuCheckboxItem>
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -146,6 +140,7 @@ export function DataTable({ columns, data }) {
           size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
+          aria-label="Previous Page"
         >
           Previous
         </Button>
@@ -154,6 +149,7 @@ export function DataTable({ columns, data }) {
           size="sm"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
+          aria-label="Next Page"
         >
           Next
         </Button>
