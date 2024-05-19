@@ -25,7 +25,6 @@ import { Badge } from "@/components/ui/badge";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-// Toggle showGigsar status
 const toggleShowGigsar = async (_id, setShowGigsar) => {
   try {
     const response = await axios.post(
@@ -40,7 +39,7 @@ const toggleShowGigsar = async (_id, setShowGigsar) => {
   }
 };
 
-export const columns = [
+export const columns = (updateArtistStatus) => [
   {
     accessorKey: "code",
     header: ({ column }) => {
@@ -130,7 +129,10 @@ export const columns = [
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={() => toggleShowGigsar(_id, setShowGigsar)}
+                  onClick={() => {
+                    toggleShowGigsar(_id, setShowGigsar);
+                    updateArtistStatus(_id, !showGigsar);
+                  }}
                 >
                   Continue
                 </AlertDialogAction>
@@ -178,3 +180,47 @@ export const columns = [
     },
   },
 ];
+
+const ArtistTable = () => {
+  const [artists, setArtists] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchArtists = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API}/artist`);
+      const filteredArtists = response.data.filter(
+        (artist) => artist.showGigsar
+      );
+      setArtists(filteredArtists);
+    } catch (error) {
+      console.error("Error fetching artists:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateArtistStatus = (id, newStatus) => {
+    setArtists((prevArtists) =>
+      prevArtists.map((artist) =>
+        artist._id === id ? { ...artist, showGigsar: newStatus } : artist
+      )
+    );
+  };
+
+  useEffect(() => {
+    fetchArtists();
+  }, []);
+
+  return (
+    <div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <Table columns={columns(updateArtistStatus)} data={artists} />
+      )}
+    </div>
+  );
+};
+
+export default ArtistTable;
