@@ -27,6 +27,7 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
       reader.onloadend = () => {
         setImageSrc(reader.result);
         setShowModal(true);
+        setCropData(reader.result);
       };
       reader.readAsDataURL(file);
     }
@@ -163,7 +164,11 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
     <>
       {!showCroppedImage && (
         <div className="mb-4">
-          <Dropzone onDrop={onFileDrop} accept="image/*" maxSize={5000000}>
+          <Dropzone
+            onDrop={onFileDrop}
+            accept={{ "image/*": [] }}
+            maxSize={5000000}
+          >
             {({ getRootProps, getInputProps }) => (
               <section className="bg-gray-200 rounded-lg p-4 pt-8 pb-8 text-center max-w-36">
                 <div {...getRootProps()}>

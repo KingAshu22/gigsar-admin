@@ -47,23 +47,9 @@ const ArtistRegistration = () => {
   const [aboutArtist, setAboutArtist] = useState("");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [shouldShowLoader, setShouldShowLoader] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
-
-  // useEffect(() => {
-  //   if (
-  //     user &&
-  //     user.fullName &&
-  //     user.phoneNumbers[0].phoneNumber &&
-  //     user.emailAddresses[0].emailAddress
-  //   ) {
-  //     setArtistName(user.fullName);
-  //     setContactNumber(user.phoneNumbers[0].phoneNumber);
-  //     setEmail(user.emailAddresses[0].emailAddress);
-  //   }
-  // }, [user]);
 
   const formatArtistName = (name) => {
     return name.toLowerCase().replace(/ /g, "-");
@@ -384,12 +370,13 @@ const ArtistRegistration = () => {
               htmlFor="corporateBudget"
               className="block text-sm font-medium text-gray-700"
             >
-              Corporate Budget
+              Corporate/Private Event Budget
             </label>
             <input
               type="number"
               id="corporateBudget"
               value={corporateBudget}
+              step={10000}
               onChange={(e) => setCorporateBudget(e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               required
@@ -403,7 +390,7 @@ const ArtistRegistration = () => {
               htmlFor="collegeBudget"
               className="block text-sm font-medium text-gray-700"
             >
-              College Budget
+              College Event Budget
             </label>
             <input
               type="number"
@@ -422,7 +409,7 @@ const ArtistRegistration = () => {
               htmlFor="weddingBudget"
               className="block text-sm font-medium text-gray-700"
             >
-              Wedding Budget
+              Wedding Event Budget
             </label>
             <input
               type="number"

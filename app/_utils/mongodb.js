@@ -1,29 +1,25 @@
 import mongoose from "mongoose";
 
-let isConnected = false;
+let cachedDb = null;
 
-export const connectToDB = async () => {
-  if (isConnected) {
-    console.log("MongoDB is already connected");
-    return;
+export async function connectToDB() {
+  if (cachedDb) {
+    return cachedDb;
   }
 
   try {
-    console.log(
-      `MongoDB URL: mongodb+srv://bookanartist2:NRMVq0Q1CJI4xZNa@book-my-singer.da90nao.mongodb.net/`
-    );
-    await mongoose.connect(
-      "mongodb+srv://bookanartist2:NRMVq0Q1CJI4xZNa@book-my-singer.da90nao.mongodb.net/",
+    const connection = await mongoose.connect(
+      process.env.NEXT_PUBLIC_MONGODB_URL,
       {
-        dbName: "test",
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
       }
     );
 
-    isConnected = true;
-    console.log("MongoDB is connected");
-  } catch (err) {
-    isConnected = false; // Reset isConnected flag on connection failure
-    console.error("Error connecting to MongoDB:", err);
-    // Depending on your application's requirements, you might want to throw an error here or retry the connection.
+    cachedDb = connection;
+    return connection;
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+    throw new Error("Error connecting to MongoDB");
   }
-};
+}
