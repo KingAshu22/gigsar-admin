@@ -163,6 +163,8 @@ const ArtistRegistration = () => {
         spotifyLink,
         musicTraining,
         aboutArtist,
+        showBookMySinger: false,
+        showGigsar: true,
       };
 
       const response = axios.post(

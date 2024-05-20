@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Dropzone from "react-dropzone";
 import { Cropper, getCroppedImg } from "react-cropper-custom";
 import "react-cropper-custom/dist/index.css";
@@ -12,13 +12,20 @@ import {
 import { nanoid } from "nanoid";
 import { fromBase64 } from "@aws-sdk/util-base64";
 
-const PhotoUploader = ({ artistName, setProfilePic }) => {
+const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
   const [imageSrc, setImageSrc] = useState(null);
   const [cropData, setCropData] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [showCroppedImage, setShowCroppedImage] = useState(false);
-  const [awsLink, setAwsLink] = useState(null);
+  const [awsLink, setAwsLink] = useState(initialImageLink);
+
+  useEffect(() => {
+    if (initialImageLink && initialImageLink.length > 1) {
+      setShowCroppedImage(true);
+      setCropData(initialImageLink);
+    }
+  }, [initialImageLink]);
 
   const onFileDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -58,6 +65,7 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
         setProfilePic(location);
         setShowModal(false);
         setShowCroppedImage(true);
+        setAwsLink(location);
       };
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -106,11 +114,11 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
       const putObjectCommand = new PutObjectCommand(uploadParams);
       await s3Client.send(putObjectCommand);
 
-      setAwsLink(
-        `https://${process.env.NEXT_PUBLIC_BUCKET}.s3.${process.env.NEXT_PUBLIC_REGION}.amazonaws.com/${folderName}/${fileName}`
-      );
+      const awsImageUrl = `https://${process.env.NEXT_PUBLIC_BUCKET}.s3.${process.env.NEXT_PUBLIC_REGION}.amazonaws.com/${folderName}/${fileName}`;
 
-      return `https://${process.env.NEXT_PUBLIC_BUCKET}.s3.${process.env.NEXT_PUBLIC_REGION}.amazonaws.com/${folderName}/${fileName}`;
+      setAwsLink(awsImageUrl);
+
+      return awsImageUrl;
     } catch (error) {
       console.error("Error uploading image:", error);
       throw error;
@@ -131,6 +139,7 @@ const PhotoUploader = ({ artistName, setProfilePic }) => {
       setCropData(null);
       setShowModal(false);
       setShowCroppedImage(false);
+      setAwsLink(null);
     } catch (error) {
       console.error("Error deleting image:", error);
     }
