@@ -26,17 +26,26 @@ const EditArtist = ({ params }) => {
 
       setId(artistData._id);
       setArtistName(artistData.name);
+      setProfilePic(artistData.profilePic);
       setGender(artistData.gender);
       setContactNumber(artistData.contact);
       setEmail(artistData.email);
       setLocation(artistData.location);
-      setWeddingBudget(artistData.price);
       setArtistType(artistData.artistType);
+      setCorporateBudget(artistData.corporateBudget);
+      setCollegeBudget(artistData.collegeBudget);
+      setWeddingBudget(artistData.price);
+      setSingerCumGuitaristBudget(artistData.singerCumGuitaristBudget);
+      setSingerPlusGuitaristBudget(artistData.singerPlusGuitaristBudget);
+      setTicketingConcertBudget(artistData.ticketingConcertBudget);
+      setOriginalSongName(artistData.original);
       setPerformanceTime(artistData.time);
       setAwards(artistData.awards);
-      setOriginalSongName(artistData.original);
+      setInstagramLink(artistData.instagram);
+      setFacebookLink(artistData.facebook);
+      setSpotifyLink(artistData.spotify);
+      setMusicTraining(artistData.training);
       setAboutArtist(artistData.blog);
-      setProfilePic(artistData.profilePic);
 
       const galleryLinks = artistData.gallery.map((item) => item.link);
 
@@ -440,6 +449,7 @@ const EditArtist = ({ params }) => {
                       value={option}
                       onChange={handleEventTypeChange}
                       className="mr-2"
+                      checked={eventTypes.includes(option)}
                     />
                     <label htmlFor={option}>{option}</label>
                   </div>
@@ -578,6 +588,7 @@ const EditArtist = ({ params }) => {
                       value={option}
                       onChange={handleGenreChange}
                       className="mr-2"
+                      checked={genres.includes(option)}
                     />
                     <label htmlFor={option}>{option}</label>
                   </div>
@@ -597,6 +608,7 @@ const EditArtist = ({ params }) => {
                       value={option}
                       onChange={handleLanguageChange}
                       className="mr-2"
+                      checked={languages.includes(option)}
                     />
                     <label htmlFor={option}>{option}</label>
                   </div>
@@ -646,6 +658,7 @@ const EditArtist = ({ params }) => {
                       value={option}
                       onChange={handleInstrumentChange}
                       className="mr-2"
+                      checked={instruments.includes(option)}
                     />
                     <label htmlFor={option}>{option}</label>
                   </div>
@@ -789,7 +802,7 @@ const EditArtist = ({ params }) => {
             </div>
           </Modal>
 
-          <Modal isOpen={isLoading} title="Submitting Form...">
+          <Modal isOpen={isLoading} title="Updating Artist Data...">
             <div className="flex justify-center items-center">
               <HashLoader color="#dc2626" size={80} />
             </div>

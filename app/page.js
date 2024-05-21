@@ -1,15 +1,50 @@
 "use client";
-import Hero from "./_components/Hero";
-import CategorySearch from "./_components/CategorySearch";
-import ArtistList from "./_components/ArtistList";
-import { Separator } from "@/components/ui/separator";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BadgePlus, MicVocal, TriangleAlert, UserRound } from "lucide-react";
 import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
+  const [registeredArtistCount, setRegisteredArtistCount] = useState(0);
+  const [displayCount, setDisplayCount] = useState(0);
+
+  useEffect(() => {
+    fetchArtistCount();
+  }, []);
+
+  const fetchArtistCount = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API}/artist-count`
+      );
+      const count = response.data.count;
+      setRegisteredArtistCount(count);
+      animateCount(count);
+    } catch (error) {
+      console.error("Error fetching artists:", error);
+    }
+  };
+
+  const animateCount = (count) => {
+    let start = 0;
+    const end = count;
+    const duration = 10000; // in milliseconds
+    const increment = Math.ceil(end / (duration / 100)); // Calculate increment based on duration
+
+    const interval = setInterval(() => {
+      if (start < end) {
+        setDisplayCount(start);
+        start += increment;
+      } else {
+        clearInterval(interval);
+        setDisplayCount(end);
+      }
+    }, 10);
+  };
+
   return (
     <div>
       <h1 className="text-2xl m-10 font-bold">
@@ -25,7 +60,7 @@ export default function Home() {
               <MicVocal className="max-sm:hidden" />
             </CardHeader>
             <CardContent>
-              <p className="text-body-bold">108</p>
+              <p className="font-bold text-primary text-9xl">{displayCount}</p>
             </CardContent>
           </Card>
         </Link>
