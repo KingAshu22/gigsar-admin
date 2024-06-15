@@ -342,7 +342,6 @@ const ArtistRegistration = () => {
             id="artistName"
             value={artistName}
             required
-            readOnly
             onChange={(e) => setArtistName(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
@@ -383,7 +382,6 @@ const ArtistRegistration = () => {
             type="text"
             id="contactNumber"
             value={contactNumber}
-            readOnly
             onChange={(e) => setContactNumber(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
@@ -400,7 +398,6 @@ const ArtistRegistration = () => {
             type="email"
             id="email"
             value={email}
-            readOnly
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
