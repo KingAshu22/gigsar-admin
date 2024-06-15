@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import "react-cropper-custom/dist/index.css";
 import "./modal.css"; // Import CSS for modal styles
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "react-hot-toast";
 import axios from "axios";
 import eventTypesOptions from "./constants/eventTypes";
 import genreOptions from "./constants/genres";
@@ -14,12 +13,21 @@ import PhotoUploader from "@/app/_components/PhotoUploader";
 import { useRouter } from "next/navigation";
 import Modal from "@/app/_components/Modal";
 import { HashLoader } from "react-spinners";
+import { useUser } from "@clerk/nextjs";
 
 const ArtistRegistration = () => {
+  const { user } = useUser();
+
   const [artistName, setArtistName] = useState();
   const [profilePic, setProfilePic] = useState("");
   const [galleryLink, setGalleryLink] = useState([]);
-  const [youtubeLinks, setYoutubeLinks] = useState([""]);
+  const [weddingLink, setWeddingLink] = useState([""]);
+  const [corporateLink, setCorporateLink] = useState([""]);
+  const [collegeLink, setCollegeLink] = useState([""]);
+  const [concertLink, setConcertLink] = useState([""]);
+  const [originalLink, setOriginalLink] = useState([""]);
+  const [bollywoodLink, setBollywoodLink] = useState([""]);
+  const [coverLink, setCoverLink] = useState([""]);
   const [gender, setGender] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [email, setEmail] = useState("");
@@ -50,6 +58,19 @@ const ArtistRegistration = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (
+      user &&
+      user.fullName &&
+      user.phoneNumbers[0].phoneNumber &&
+      user.emailAddresses[0].emailAddress
+    ) {
+      setArtistName(user.fullName);
+      setContactNumber(user.phoneNumbers[0].phoneNumber);
+      setEmail(user.emailAddresses[0].emailAddress);
+    }
+  }, [user]);
 
   const formatArtistName = (name) => {
     return name.toLowerCase().replace(/ /g, "-");
@@ -93,8 +114,32 @@ const ArtistRegistration = () => {
   };
 
   // Function to add more input fields
-  const addMoreLink = () => {
-    setYoutubeLinks((prevLinks) => [...prevLinks, ""]);
+  const addMoreWedding = () => {
+    setWeddingLink((prevLinks) => [...prevLinks, ""]);
+  };
+
+  const addMoreCorporate = () => {
+    setCorporateLink((prevLinks) => [...prevLinks, ""]);
+  };
+
+  const addMoreCollege = () => {
+    setCollegeLink((prevLinks) => [...prevLinks, ""]);
+  };
+
+  const addMoreConcert = () => {
+    setConcertLink((prevLinks) => [...prevLinks, ""]);
+  };
+
+  const addMoreOriginal = () => {
+    setOriginalLink((prevLinks) => [...prevLinks, ""]);
+  };
+
+  const addMoreBollywood = () => {
+    setBollywoodLink((prevLinks) => [...prevLinks, ""]);
+  };
+
+  const addMoreCover = () => {
+    setCoverLink((prevLinks) => [...prevLinks, ""]);
   };
 
   // Function to extract video ID from YouTube link
@@ -107,18 +152,108 @@ const ArtistRegistration = () => {
   };
 
   // Function to handle input change
-  const handleLinkChange = (index, value) => {
+  const handleWeddingChange = (index, value) => {
     const videoId = extractVideoId(value);
     if (videoId) {
-      const updatedLinks = [...youtubeLinks];
+      const updatedLinks = [...weddingLink];
       updatedLinks[index] = videoId;
-      setYoutubeLinks(updatedLinks);
+      setWeddingLink(updatedLinks);
     } else {
       // Handle invalid link or show an error message
       // For now, let's set an empty string
-      const updatedLinks = [...youtubeLinks];
+      const updatedLinks = [...weddingLink];
       updatedLinks[index] = "";
-      setYoutubeLinks(updatedLinks);
+      setWeddingLink(updatedLinks);
+    }
+  };
+
+  const handleCorporateChange = (index, value) => {
+    const videoId = extractVideoId(value);
+    if (videoId) {
+      const updatedLinks = [...corporateLink];
+      updatedLinks[index] = videoId;
+      setCorporateLink(updatedLinks);
+    } else {
+      // Handle invalid link or show an error message
+      // For now, let's set an empty string
+      const updatedLinks = [...corporateLink];
+      updatedLinks[index] = "";
+      setCorporateLink(updatedLinks);
+    }
+  };
+
+  const handleCollegeChange = (index, value) => {
+    const videoId = extractVideoId(value);
+    if (videoId) {
+      const updatedLinks = [...collegeLink];
+      updatedLinks[index] = videoId;
+      setCollegeLink(updatedLinks);
+    } else {
+      // Handle invalid link or show an error message
+      // For now, let's set an empty string
+      const updatedLinks = [...collegeLink];
+      updatedLinks[index] = "";
+      setCollegeLink(updatedLinks);
+    }
+  };
+
+  const handleConcertChange = (index, value) => {
+    const videoId = extractVideoId(value);
+    if (videoId) {
+      const updatedLinks = [...concertLink];
+      updatedLinks[index] = videoId;
+      setConcertLink(updatedLinks);
+    } else {
+      // Handle invalid link or show an error message
+      // For now, let's set an empty string
+      const updatedLinks = [...concertLink];
+      updatedLinks[index] = "";
+      setConcertLink(updatedLinks);
+    }
+  };
+
+  const handleOriginalChange = (index, value) => {
+    const videoId = extractVideoId(value);
+    if (videoId) {
+      const updatedLinks = [...originalLink];
+      updatedLinks[index] = videoId;
+      setOriginalLink(updatedLinks);
+    } else {
+      // Handle invalid link or show an error message
+      // For now, let's set an empty string
+      const updatedLinks = [...originalLink];
+      updatedLinks[index] = "";
+      setOriginalLink(updatedLinks);
+    }
+  };
+
+  const handleBollywoodChange = (index, value) => {
+    const videoId = extractVideoId(value);
+    if (videoId) {
+      const updatedLinks = [...bollywoodLink];
+      updatedLinks[index] = videoId;
+      setBollywoodLink(updatedLinks);
+    } else {
+      // Handle invalid link or show an error message
+      // For now, let's set an empty string
+      const updatedLinks = [...bollywoodLink];
+      updatedLinks[index] = "";
+      setBollywoodLink(updatedLinks);
+    }
+  };
+
+  const handleCoverChange = (index, value) => {
+    const videoId = extractVideoId(value);
+    if (videoId) {
+      const updatedLinks = [...coverLink];
+      updatedLinks[index] = videoId;
+      setCoverLink(updatedLinks);
+    } else {
+      // Handle invalid link or show an error message
+      // For now, let's set an empty string
+      const updatedLinks = [...coverLink];
+      updatedLinks[index] = "";
+      setCoverLink(updatedLinks);
     }
   };
 
@@ -138,7 +273,13 @@ const ArtistRegistration = () => {
         artistName,
         profilePic,
         galleryLink,
-        youtubeLinks,
+        weddingLink,
+        corporateLink,
+        collegeLink,
+        concertLink,
+        originalLink,
+        bollywoodLink,
+        coverLink,
         gender,
         contactNumber,
         email,
@@ -163,8 +304,8 @@ const ArtistRegistration = () => {
         spotifyLink,
         musicTraining,
         aboutArtist,
+        showGigsar: false,
         showBookMySinger: false,
-        showGigsar: true,
       };
 
       const response = axios.post(
@@ -201,6 +342,7 @@ const ArtistRegistration = () => {
             id="artistName"
             value={artistName}
             required
+            readOnly
             onChange={(e) => setArtistName(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
@@ -241,6 +383,7 @@ const ArtistRegistration = () => {
             type="text"
             id="contactNumber"
             value={contactNumber}
+            readOnly
             onChange={(e) => setContactNumber(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
@@ -257,6 +400,7 @@ const ArtistRegistration = () => {
             type="email"
             id="email"
             value={email}
+            readOnly
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
@@ -302,7 +446,7 @@ const ArtistRegistration = () => {
         {/* Gallery Image Uploaders */}
         <div className="mb-4">
           <h3>Upload Gallery Images</h3>
-          <div className="gallery-uploader-container grid grid-cols-3 gap-4 justify-center">
+          <div className="gallery-uploader-container grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center">
             {[...Array(9)].map((_, index) => (
               <div key={index} className="flex flex-col items-center">
                 <label
@@ -327,21 +471,171 @@ const ArtistRegistration = () => {
               htmlFor="youtubeLink"
               className="block text-sm font-medium text-gray-700"
             >
-              YouTube Link:
+              Wedding/Private Event Videos Youtube Link:
             </label>
-            {youtubeLinks.map((link, index) => (
+            {weddingLink.map((link, index) => (
               <div key={index}>
                 <input
                   type="text"
                   id={`youtubeLink-${index}`}
                   value={link}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  onChange={(e) => handleLinkChange(index, e.target.value)}
+                  onChange={(e) => handleWeddingChange(index, e.target.value)}
                 />
               </div>
             ))}
           </div>
-          <Button type="button" className="" onClick={addMoreLink}>
+          <Button type="button" className="" onClick={addMoreWedding}>
+            Add More Link
+          </Button>
+        </div>
+
+        <div className="mb-4">
+          <div>
+            <label
+              htmlFor="youtubeLink"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Corporate Event Videos Youtube Link:
+            </label>
+            {corporateLink.map((link, index) => (
+              <div key={index}>
+                <input
+                  type="text"
+                  id={`youtubeLink-${index}`}
+                  value={link}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  onChange={(e) => handleCorporateChange(index, e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+          <Button type="button" className="" onClick={addMoreCorporate}>
+            Add More Link
+          </Button>
+        </div>
+
+        <div className="mb-4">
+          <div>
+            <label
+              htmlFor="youtubeLink"
+              className="block text-sm font-medium text-gray-700"
+            >
+              College Event Videos Youtube Link:
+            </label>
+            {collegeLink.map((link, index) => (
+              <div key={index}>
+                <input
+                  type="text"
+                  id={`youtubeLink-${index}`}
+                  value={link}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  onChange={(e) => handleCollegeChange(index, e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+          <Button type="button" className="" onClick={addMoreCollege}>
+            Add More Link
+          </Button>
+        </div>
+
+        <div className="mb-4">
+          <div>
+            <label
+              htmlFor="youtubeLink"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Ticketing Concert Videos Youtube Link:
+            </label>
+            {concertLink.map((link, index) => (
+              <div key={index}>
+                <input
+                  type="text"
+                  id={`youtubeLink-${index}`}
+                  value={link}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  onChange={(e) => handleConcertChange(index, e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+          <Button type="button" className="" onClick={addMoreConcert}>
+            Add More Link
+          </Button>
+        </div>
+
+        <div className="mb-4">
+          <div>
+            <label
+              htmlFor="youtubeLink"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Original Videos Youtube Link:
+            </label>
+            {originalLink.map((link, index) => (
+              <div key={index}>
+                <input
+                  type="text"
+                  id={`youtubeLink-${index}`}
+                  value={link}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  onChange={(e) => handleOriginalChange(index, e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+          <Button type="button" className="" onClick={addMoreOriginal}>
+            Add More Link
+          </Button>
+        </div>
+
+        <div className="mb-4">
+          <div>
+            <label
+              htmlFor="youtubeLink"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Bollywood Playback Videos Youtube Link:
+            </label>
+            {bollywoodLink.map((link, index) => (
+              <div key={index}>
+                <input
+                  type="text"
+                  id={`youtubeLink-${index}`}
+                  value={link}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  onChange={(e) => handleBollywoodChange(index, e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+          <Button type="button" className="" onClick={addMoreBollywood}>
+            Add More Link
+          </Button>
+        </div>
+
+        <div className="mb-4">
+          <div>
+            <label
+              htmlFor="youtubeLink"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Cover Videos Youtube Link:
+            </label>
+            {coverLink.map((link, index) => (
+              <div key={index}>
+                <input
+                  type="text"
+                  id={`youtubeLink-${index}`}
+                  value={link}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  onChange={(e) => handleCoverChange(index, e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+          <Button type="button" className="" onClick={addMoreCover}>
             Add More Link
           </Button>
         </div>
@@ -372,7 +666,7 @@ const ArtistRegistration = () => {
               htmlFor="corporateBudget"
               className="block text-sm font-medium text-gray-700"
             >
-              Corporate/Private Event Budget
+              Corporate Event Budget
             </label>
             <input
               type="number"
@@ -411,7 +705,7 @@ const ArtistRegistration = () => {
               htmlFor="weddingBudget"
               className="block text-sm font-medium text-gray-700"
             >
-              Wedding Event Budget
+              Wedding/Private Event Budget
             </label>
             <input
               type="number"
@@ -715,27 +1009,24 @@ const ArtistRegistration = () => {
         isOpen={success}
         onClose={() => setSuccess(false)}
         title="Artist Registered"
-        description={`${artistName}'s Form has been successfully saved.`}
+        description={`${artistName}'s Form has been successfully Registered. Your Form is now in Pending Status. Our Team will verify your details and once everything is correct we will make your page live.`}
       >
         <div className="flex justify-between">
-          <button
+          {/* <button
             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             type="button"
             onClick={() =>
-              window.open(
-                `https://gigsar.com/artist/${formatArtistName(artistName)}`,
-                "_blank"
-              )
+              router.push(`/artist/${formatArtistName(artistName)}`)
             }
           >
             View Page
-          </button>
+          </button> */}
           <button
             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             type="button"
             onClick={() => router.push("/")}
           >
-            Dashboard
+            Home Page
           </button>
         </div>
       </Modal>
