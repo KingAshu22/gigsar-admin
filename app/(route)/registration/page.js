@@ -146,11 +146,10 @@ const ArtistRegistration = () => {
   const extractVideoId = (link) => {
     // Regular expression to match YouTube video ID
     const regex =
-      /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=|shorts\/))([a-zA-Z0-9_-]{11})/;
     const match = link.match(regex);
     return match ? match[1] : null;
   };
-
   // Function to handle input change
   const handleWeddingChange = (index, value) => {
     const videoId = extractVideoId(value);
