@@ -57,10 +57,6 @@ const EditArtist = ({ params }) => {
         .split(",")
         .map((type) => type.trim());
 
-      const languagesArray = artistData.languages
-        .split(",")
-        .map((type) => type.trim());
-
       const instrumentsArray = artistData.instruments
         .split(",")
         .map((type) => type.trim());
@@ -103,7 +99,6 @@ const EditArtist = ({ params }) => {
       setGalleryLink(galleryLinks);
       setEventTypes(eventTypesArray);
       setGenres(genresArray);
-      setLanguages(languagesArray);
       setInstruments(instrumentsArray);
       setWeddingLink(weddingLink);
       setCorporateLink(corporateLink);
