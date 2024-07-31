@@ -540,8 +540,27 @@ const EditArtist = ({ params }) => {
               >
                 <option value="">Select Artist Type</option>
                 <option value="singer-band">Singer/Live Band</option>
-                <option value="Musician">Musician</option>
-                <option value="DJ">DJ</option>
+                <option value="instrumentalist">Instrumentalist</option>
+                <option value="dj">DJ</option>
+                <option value="comedian">Comedian</option>
+                <option value="actor">Actor</option>
+                <option value="magician">Magician</option>
+                <option value="dancer">Dancer</option>
+                <option value="anchor">Anchor</option>
+                <option value="foreign-artist">Foreign Artist</option>
+                <option value="event-manager">Event Manager</option>
+                <option value="wedding-planner">Wedding Planner</option>
+                <option value="artist-manager">Artist Manager</option>
+                <option value="rapper">Rapper</option>
+                <option value="voice-over-artist">Voice over Artist</option>
+                <option value="session-artist">
+                  Session Artist (Musician)
+                </option>
+                <option value="music-composer">Music Composer</option>
+                <option value="lyricist">Lyricist</option>
+                <option value="master-mixing-engineer">
+                  Master Mixing Engineer
+                </option>
               </select>
             </div>
 
