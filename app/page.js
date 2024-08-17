@@ -75,15 +75,17 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row justify-between items-center">
-            <CardTitle>Clients Enquiry</CardTitle>
-            <UserRound className="max-sm:hidden" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-body-bold">40</p>
-          </CardContent>
-        </Card>
+        <Link href="/chat">
+          <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+              <CardTitle>Clients Enquiry</CardTitle>
+              <UserRound className="max-sm:hidden" />
+            </CardHeader>
+            <CardContent>
+              <p className="text-body-bold">40</p>
+            </CardContent>
+          </Card>
+        </Link>
 
         <Link href="/registration">
           <Card>
