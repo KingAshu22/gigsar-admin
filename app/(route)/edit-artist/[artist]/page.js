@@ -13,9 +13,67 @@ import PhotoUploader from "@/app/_components/PhotoUploader";
 import { useRouter } from "next/navigation";
 import Modal from "@/app/_components/Modal";
 import { HashLoader } from "react-spinners";
+import SearchList from "@/app/_components/SearchList";
+import { topGenres } from "../../registration/constants/topGenres";
+import topInstruments from "../../registration/constants/topInstruments";
+import ReactPlayer from "react-player/lazy";
 
 const EditArtist = ({ params }) => {
   const [id, setId] = useState();
+  const [artistName, setArtistName] = useState();
+  const [profilePic, setProfilePic] = useState("");
+  const [galleryLink, setGalleryLink] = useState([]);
+  const [gender, setGender] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [location, setLocation] = useState("");
+  const [artistType, setArtistType] = useState("");
+  const [eventTypes, setEventTypes] = useState([]);
+  const [corporateBudget, setCorporateBudget] = useState("");
+  const [collegeBudget, setCollegeBudget] = useState("");
+  const [weddingBudget, setWeddingBudget] = useState("");
+  const [singerCumGuitaristBudget, setSingerCumGuitaristBudget] = useState("");
+  const [singerPlusGuitaristBudget, setSingerPlusGuitaristBudget] =
+    useState("");
+  const [ticketingConcertBudget, setTicketingConcertBudget] = useState("");
+  const [genres, setGenres] = useState([]);
+  const [languages, setLanguages] = useState([]);
+  const [originalSongName, setOriginalSongName] = useState("");
+  const [performanceTime, setPerformanceTime] = useState("");
+  const [instruments, setInstruments] = useState([]);
+  const [awards, setAwards] = useState("");
+  const [instagramLink, setInstagramLink] = useState("");
+  const [facebookLink, setFacebookLink] = useState("");
+  const [spotifyLink, setSpotifyLink] = useState("");
+  const [youtubeLink, setYoutubeLink] = useState("");
+  const [musicTraining, setMusicTraining] = useState("");
+  const [aboutArtist, setAboutArtist] = useState("");
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [fetchData, setFetchData] = useState(true);
+  const router = useRouter();
+  const [weddingLink, setWeddingLink] = useState([""]);
+  const [corporateLink, setCorporateLink] = useState([""]);
+  const [collegeLink, setCollegeLink] = useState([""]);
+  const [concertLink, setConcertLink] = useState([""]);
+  const [originalLink, setOriginalLink] = useState([""]);
+  const [bollywoodLink, setBollywoodLink] = useState([""]);
+  const [coverLink, setCoverLink] = useState([""]);
+  const [cafeLink, setCafeLink] = useState([""]);
+  const [houseLink, setHouseLink] = useState([""]);
+
+  const extractLinks = (artistData, eventName) => {
+    console.log("Artist Data:", artistData);
+    console.log("Event Name:", eventName);
+    const links = artistData.events
+      .filter((event) => event.name === eventName)
+      .map((event) => event.links)
+      .flat();
+    console.log(`Links for ${eventName}:`, links);
+    return links;
+  };
 
   const getArtist = async () => {
     try {
@@ -61,52 +119,20 @@ const EditArtist = ({ params }) => {
         .split(",")
         .map((type) => type.trim());
 
-      const weddingLink = artistData.events
-        .filter((event) => event.name === "Wedding Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
-
-      const corporateLink = artistData.events
-        .filter((event) => event.name === "Corporate Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
-
-      const collegeLink = artistData.events
-        .filter((event) => event.name === "College Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
-
-      const concertLink = artistData.events
-        .filter((event) => event.name === "Ticketing Concert Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
-
-      const originalLink = artistData.events
-        .filter((event) => event.name === "Original Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
-
-      const bollywoodLink = artistData.events
-        .filter((event) => event.name === "Bollywood Playback Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
-
-      const coverLink = artistData.events
-        .filter((event) => event.name === "Cover Videos") // Filter events with name "Wedding Videos"
-        .map((event) => event.links) // Extract the links array from the event
-        .flat(); // Flatten the array (in case there are multiple links, though it seems you only have one per event)
+      setWeddingLink(extractLinks(artistData, "Wedding Videos"));
+      setCorporateLink(extractLinks(artistData, "Corporate Videos"));
+      setCollegeLink(extractLinks(artistData, "College Videos"));
+      setConcertLink(extractLinks(artistData, "Ticketing Concert Videos"));
+      setOriginalLink(extractLinks(artistData, "Original Videos"));
+      setBollywoodLink(extractLinks(artistData, "Bollywood Playback Videos"));
+      setCoverLink(extractLinks(artistData, "Cover Videos"));
+      setCafeLink(extractLinks(artistData, "Cafe/Clubs Videos"));
+      setHouseLink(extractLinks(artistData, "House Party Videos"));
 
       setGalleryLink(galleryLinks);
       setEventTypes(eventTypesArray);
       setGenres(genresArray);
       setInstruments(instrumentsArray);
-      setWeddingLink(weddingLink);
-      setCorporateLink(corporateLink);
-      setCollegeLink(collegeLink);
-      setConcertLink(concertLink);
-      setOriginalLink(originalLink);
-      setBollywoodLink(bollywoodLink);
-      setCoverLink(coverLink);
     } catch (error) {
       console.error("Error fetching artists:", error);
     } finally {
@@ -117,88 +143,9 @@ const EditArtist = ({ params }) => {
     }
   };
 
-  const [artistName, setArtistName] = useState();
-  const [profilePic, setProfilePic] = useState("");
-  const [galleryLink, setGalleryLink] = useState([]);
-  const [weddingLink, setWeddingLink] = useState([""]);
-  const [corporateLink, setCorporateLink] = useState([""]);
-  const [collegeLink, setCollegeLink] = useState([""]);
-  const [concertLink, setConcertLink] = useState([""]);
-  const [originalLink, setOriginalLink] = useState([""]);
-  const [bollywoodLink, setBollywoodLink] = useState([""]);
-  const [coverLink, setCoverLink] = useState([""]);
-  const [gender, setGender] = useState("");
-  const [contactNumber, setContactNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [location, setLocation] = useState("");
-  const [artistType, setArtistType] = useState("");
-  const [eventTypes, setEventTypes] = useState([]);
-  const [corporateBudget, setCorporateBudget] = useState("");
-  const [collegeBudget, setCollegeBudget] = useState("");
-  const [weddingBudget, setWeddingBudget] = useState("");
-  const [singerCumGuitaristBudget, setSingerCumGuitaristBudget] = useState("");
-  const [singerPlusGuitaristBudget, setSingerPlusGuitaristBudget] =
-    useState("");
-  const [ticketingConcertBudget, setTicketingConcertBudget] = useState("");
-  const [genres, setGenres] = useState([]);
-  const [languages, setLanguages] = useState([]);
-  const [originalSongName, setOriginalSongName] = useState("");
-  const [performanceTime, setPerformanceTime] = useState("");
-  const [instruments, setInstruments] = useState([]);
-  const [awards, setAwards] = useState("");
-  const [instagramLink, setInstagramLink] = useState("");
-  const [facebookLink, setFacebookLink] = useState("");
-  const [spotifyLink, setSpotifyLink] = useState("");
-  const [youtubeLink, setYoutubeLink] = useState("");
-  const [musicTraining, setMusicTraining] = useState("");
-  const [aboutArtist, setAboutArtist] = useState("");
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const [fetchData, setFetchData] = useState(true);
-  const router = useRouter();
-
   useEffect(() => {
     getArtist();
-  }, []);
-
-  const formatArtistName = (name) => {
-    return name.toLowerCase().replace(/ /g, "-");
-  };
-
-  const handleEventTypeChange = (event) => {
-    const selectedEventType = event.target.value;
-    if (event.target.checked) {
-      setEventTypes([...eventTypes, selectedEventType]);
-    } else {
-      setEventTypes(eventTypes.filter((type) => type !== selectedEventType));
-    }
-  };
-  const handleGenreChange = (event) => {
-    const selectedGenre = event.target.value;
-    if (event.target.checked) {
-      setGenres([...genres, selectedGenre]);
-    } else {
-      setGenres(genres.filter((type) => type !== selectedGenre));
-    }
-  };
-  const handleLanguageChange = (event) => {
-    const selectedLanguage = event.target.value;
-    if (event.target.checked) {
-      setLanguages([...languages, selectedLanguage]);
-    } else {
-      setLanguages(languages.filter((type) => type !== selectedLanguage));
-    }
-  };
-  const handleInstrumentChange = (event) => {
-    const selectedInstrument = event.target.value;
-    if (event.target.checked) {
-      setInstruments([...instruments, selectedInstrument]);
-    } else {
-      setInstruments(instruments.filter((type) => type !== selectedInstrument));
-    }
-  };
+  }, [params.artist]);
 
   const handleGalleryUpload = (link, index) => {
     setGalleryLink((prevLinks) => {
@@ -208,148 +155,22 @@ const EditArtist = ({ params }) => {
     });
   };
 
-  // Function to add more input fields
-  const addMoreWedding = () => {
-    setWeddingLink((prevLinks) => [...prevLinks, ""]);
+  const addMoreLinks = (setter) => {
+    setter((prevLinks) => [...prevLinks, ""]);
   };
 
-  const addMoreCorporate = () => {
-    setCorporateLink((prevLinks) => [...prevLinks, ""]);
-  };
-
-  const addMoreCollege = () => {
-    setCollegeLink((prevLinks) => [...prevLinks, ""]);
-  };
-
-  const addMoreConcert = () => {
-    setConcertLink((prevLinks) => [...prevLinks, ""]);
-  };
-
-  const addMoreOriginal = () => {
-    setOriginalLink((prevLinks) => [...prevLinks, ""]);
-  };
-
-  const addMoreBollywood = () => {
-    setBollywoodLink((prevLinks) => [...prevLinks, ""]);
-  };
-
-  const addMoreCover = () => {
-    setCoverLink((prevLinks) => [...prevLinks, ""]);
-  };
-
-  // Function to extract video ID from YouTube link
   const extractVideoId = (link) => {
-    // Regular expression to match YouTube video ID
     const regex =
-      /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const match = link.match(regex);
     return match ? match[1] : null;
   };
 
-  // Function to handle input change
-  const handleWeddingChange = (index, value) => {
+  const handleLinkChange = (index, value, links, setter) => {
     const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...weddingLink];
-      updatedLinks[index] = videoId;
-      setWeddingLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...weddingLink];
-      updatedLinks[index] = "";
-      setWeddingLink(updatedLinks);
-    }
-  };
-
-  const handleCorporateChange = (index, value) => {
-    const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...corporateLink];
-      updatedLinks[index] = videoId;
-      setCorporateLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...corporateLink];
-      updatedLinks[index] = "";
-      setCorporateLink(updatedLinks);
-    }
-  };
-
-  const handleCollegeChange = (index, value) => {
-    const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...collegeLink];
-      updatedLinks[index] = videoId;
-      setCollegeLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...collegeLink];
-      updatedLinks[index] = "";
-      setCollegeLink(updatedLinks);
-    }
-  };
-
-  const handleConcertChange = (index, value) => {
-    const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...concertLink];
-      updatedLinks[index] = videoId;
-      setConcertLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...concertLink];
-      updatedLinks[index] = "";
-      setConcertLink(updatedLinks);
-    }
-  };
-
-  const handleOriginalChange = (index, value) => {
-    const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...originalLink];
-      updatedLinks[index] = videoId;
-      setOriginalLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...originalLink];
-      updatedLinks[index] = "";
-      setOriginalLink(updatedLinks);
-    }
-  };
-
-  const handleBollywoodChange = (index, value) => {
-    const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...bollywoodLink];
-      updatedLinks[index] = videoId;
-      setBollywoodLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...bollywoodLink];
-      updatedLinks[index] = "";
-      setBollywoodLink(updatedLinks);
-    }
-  };
-
-  const handleCoverChange = (index, value) => {
-    const videoId = extractVideoId(value);
-    if (videoId) {
-      const updatedLinks = [...coverLink];
-      updatedLinks[index] = videoId;
-      setCoverLink(updatedLinks);
-    } else {
-      // Handle invalid link or show an error message
-      // For now, let's set an empty string
-      const updatedLinks = [...coverLink];
-      updatedLinks[index] = "";
-      setCoverLink(updatedLinks);
-    }
+    const updatedLinks = [...links];
+    updatedLinks[index] = videoId || "";
+    setter(updatedLinks);
   };
 
   const handleSubmit = async (e) => {
@@ -375,6 +196,8 @@ const EditArtist = ({ params }) => {
         originalLink,
         bollywoodLink,
         coverLink,
+        cafeLink,
+        houseLink,
         gender,
         contactNumber,
         email,
@@ -418,6 +241,22 @@ const EditArtist = ({ params }) => {
       }, 3000);
     }
   };
+
+  const eventTypesVideos = [
+    ["Wedding/Private Event Videos Youtube Link:", weddingLink, setWeddingLink],
+    ["Corporate Event Videos Youtube Link:", corporateLink, setCorporateLink],
+    ["College Event Videos Youtube Link:", collegeLink, setCollegeLink],
+    ["Ticketing Concert Videos Youtube Link:", concertLink, setConcertLink],
+    ["Original Videos Youtube Link:", originalLink, setOriginalLink],
+    [
+      "Bollywood Playback Videos Youtube Link:",
+      bollywoodLink,
+      setBollywoodLink,
+    ],
+    ["Cover Videos Youtube Link:", coverLink, setCoverLink],
+    ["Cafe/Clubs Videos Youtube Link:", cafeLink, setCafeLink],
+    ["House Party Event Videos Youtube Link:", houseLink, setHouseLink],
+  ];
 
   return (
     <>
@@ -587,213 +426,63 @@ const EditArtist = ({ params }) => {
               </div>
             </div>
 
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Wedding/Private Event Videos Youtube Link:
-                </label>
-                {weddingLink.map((link, index) => (
-                  <div key={index}>
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) =>
-                        handleWeddingChange(index, e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-              <Button type="button" className="" onClick={addMoreWedding}>
-                Add More Link
-              </Button>
-            </div>
+            {eventTypesVideos.map(([label, links, setter], idx) => (
+              <div className="mb-20" key={idx}>
+                <div>
+                  <label className="block text-lg mb-2 font-bold text-gray-700">
+                    {label}
+                  </label>
+                  {links.map((link, index) => (
+                    <div key={index} className="mb-4">
+                      {link.length > 1 && (
+                        <>
+                          <ReactPlayer
+                            url={`https://www.youtube.com/watch?v=${link}`}
+                            width="480px"
+                            height="270px"
+                            class="desktop"
+                          />
 
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Corporate Event Videos Youtube Link:
-                </label>
-                {corporateLink.map((link, index) => (
-                  <div key={index}>
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) =>
-                        handleCorporateChange(index, e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
+                          <ReactPlayer
+                            url={`https://www.youtube.com/watch?v=${link}`}
+                            width="312px"
+                            height="175.5px"
+                            class="mobile"
+                          />
+                        </>
+                      )}
+                      <input
+                        type="text"
+                        value={link}
+                        autoComplete="off"
+                        className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        onChange={(e) =>
+                          handleLinkChange(index, e.target.value, links, setter)
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+                <Button type="button" onClick={() => addMoreLinks(setter)}>
+                  Add Link
+                </Button>
+                <hr
+                  className="mt-4"
+                  style={{
+                    borderWidth: "1px",
+                    borderColor: "#f44336",
+                  }}
+                />
               </div>
-              <Button type="button" className="" onClick={addMoreCorporate}>
-                Add More Link
-              </Button>
-            </div>
+            ))}
 
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  College Event Videos Youtube Link:
-                </label>
-                {collegeLink.map((link, index) => (
-                  <div key={index}>
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) =>
-                        handleCollegeChange(index, e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-              <Button type="button" className="" onClick={addMoreCollege}>
-                Add More Link
-              </Button>
-            </div>
-
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Ticketing Concert Videos Youtube Link:
-                </label>
-                {concertLink.map((link, index) => (
-                  <div key={index}>
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) =>
-                        handleConcertChange(index, e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-              <Button type="button" className="" onClick={addMoreConcert}>
-                Add More Link
-              </Button>
-            </div>
-
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Original Videos Youtube Link:
-                </label>
-                {originalLink.map((link, index) => (
-                  <div key={index}>
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) =>
-                        handleOriginalChange(index, e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-              <Button type="button" className="" onClick={addMoreOriginal}>
-                Add More Link
-              </Button>
-            </div>
-
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Bollywood Playback Videos Youtube Link:
-                </label>
-                {bollywoodLink.map((link, index) => (
-                  <div key={index}>
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) =>
-                        handleBollywoodChange(index, e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-              <Button type="button" className="" onClick={addMoreBollywood}>
-                Add More Link
-              </Button>
-            </div>
-
-            <div className="mb-4">
-              <div>
-                <label
-                  htmlFor="youtubeLink"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Cover Videos Youtube Link:
-                </label>
-                {coverLink.map((link, index) => (
-                  <div key={index}>
-                    <input
-                      type="text"
-                      id={`youtubeLink-${index}`}
-                      value={link}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      onChange={(e) => handleCoverChange(index, e.target.value)}
-                    />
-                  </div>
-                ))}
-              </div>
-              <Button type="button" className="" onClick={addMoreCover}>
-                Add More Link
-              </Button>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                Event Types
-              </label>
-              <div className="grid grid-cols-3 gap-4">
-                {eventTypesOptions.map((option) => (
-                  <div className="" key={option}>
-                    <input
-                      type="checkbox"
-                      id={option}
-                      value={option}
-                      onChange={handleEventTypeChange}
-                      className="mr-2"
-                      checked={eventTypes.includes(option)}
-                    />
-                    <label htmlFor={option}>{option}</label>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <SearchList
+              type="Event Types"
+              list={eventTypesOptions}
+              topList={eventTypesOptions}
+              selectedItems={eventTypes}
+              setSelectedItems={setEventTypes}
+            />
 
             {eventTypes.includes("Corporate") && (
               <div className="mb-4">
@@ -801,7 +490,7 @@ const EditArtist = ({ params }) => {
                   htmlFor="corporateBudget"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Corporate/Private Event Budget
+                  Corporate Event Budget
                 </label>
                 <input
                   type="number"
@@ -840,7 +529,7 @@ const EditArtist = ({ params }) => {
                   htmlFor="weddingBudget"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Wedding Event Budget
+                  Wedding/Private Event Budget
                 </label>
                 <input
                   type="number"
@@ -860,7 +549,7 @@ const EditArtist = ({ params }) => {
                     htmlFor="singerCumGuitaristBudget"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Singer cum Guitarist Budget
+                    House Party Budget
                   </label>
                   <input
                     type="number"
@@ -868,24 +557,6 @@ const EditArtist = ({ params }) => {
                     value={singerCumGuitaristBudget}
                     onChange={(e) =>
                       setSingerCumGuitaristBudget(e.target.value)
-                    }
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    required
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="singerPlusGuitaristBudget"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Singer + Guitarist Budget
-                  </label>
-                  <input
-                    type="number"
-                    id="singerPlusGuitaristBudget"
-                    value={singerPlusGuitaristBudget}
-                    onChange={(e) =>
-                      setSingerPlusGuitaristBudget(e.target.value)
                     }
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
@@ -917,23 +588,15 @@ const EditArtist = ({ params }) => {
               <label className="block text-sm font-medium text-gray-700">
                 Genre
               </label>
-              <div className="grid sm:grid-cols-3 grid-cols-2 gap-4">
-                {genreOptions.map((option) => (
-                  <div key={option}>
-                    <input
-                      type="checkbox"
-                      id={option}
-                      value={option}
-                      onChange={handleGenreChange}
-                      className="mr-2"
-                      checked={genres.includes(option)}
-                    />
-                    <label htmlFor={option}>{option}</label>
-                  </div>
-                ))}
-              </div>
+              <SearchList
+                type="Genre"
+                list={genreOptions}
+                topList={topGenres}
+                selectedItems={genres}
+                setSelectedItems={setGenres}
+              />
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 Language Speaks
               </label>
@@ -952,7 +615,7 @@ const EditArtist = ({ params }) => {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
             <div className="mb-4">
               <label
                 htmlFor="originalSong"
@@ -987,21 +650,13 @@ const EditArtist = ({ params }) => {
               <label className="block text-sm font-medium text-gray-700">
                 Which Instruments do you play
               </label>
-              <div className="grid sm:grid-cols-3 grid-cols-2 gap-4">
-                {instrumentOptions.map((option) => (
-                  <div key={option}>
-                    <input
-                      type="checkbox"
-                      id={option}
-                      value={option}
-                      onChange={handleInstrumentChange}
-                      className="mr-2"
-                      checked={instruments.includes(option)}
-                    />
-                    <label htmlFor={option}>{option}</label>
-                  </div>
-                ))}
-              </div>
+              <SearchList
+                type="Instruments"
+                list={instrumentOptions}
+                topList={topInstruments}
+                selectedItems={instruments}
+                setSelectedItems={setInstruments}
+              />
             </div>
             <div className="mb-4">
               <label

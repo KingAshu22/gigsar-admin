@@ -3,9 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import io from "socket.io-client";
 import ChatList from "@/app/_components/ChatList";
 import ChatWindow from "@/app/_components/ChatWindow";
 import getProfilePic from "@/app/helpers/profilePic";
+
+let socket;
 
 const Chat = () => {
   const [chats, setChats] = useState([]);
@@ -14,7 +17,18 @@ const Chat = () => {
   const router = useRouter();
 
   useEffect(() => {
+    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
     getAllMessages();
+
+    socket.on("message", (newMessage) => {
+      updateChatsWithNewMessage(newMessage);
+    });
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
   }, []);
 
   const getAllMessages = async () => {
@@ -56,6 +70,36 @@ const Chat = () => {
     return chatData.sort(
       (a, b) => new Date(b.lastMessage.time) - new Date(a.lastMessage.time)
     );
+  };
+
+  const updateChatsWithNewMessage = (newMessage) => {
+    setChats((prevChats) => {
+      const updatedChats = [...prevChats];
+      const chatIndex = updatedChats.findIndex(
+        (chat) =>
+          chat.clientId === newMessage.clientId &&
+          chat.artistId === newMessage.artistId
+      );
+
+      if (chatIndex > -1) {
+        updatedChats[chatIndex].message.push(newMessage);
+        updatedChats[chatIndex].lastMessage = newMessage;
+      } else {
+        updatedChats.push({
+          artistId: newMessage.artistId,
+          clientId: newMessage.clientId,
+          clientName: newMessage.clientName,
+          clientContact: newMessage.clientContact,
+          clientEmail: newMessage.clientEmail,
+          message: [newMessage],
+          lastMessage: newMessage,
+        });
+      }
+
+      return updatedChats.sort(
+        (a, b) => new Date(b.lastMessage.time) - new Date(a.lastMessage.time)
+      );
+    });
   };
 
   useEffect(() => {
@@ -100,6 +144,7 @@ const Chat = () => {
             selectedChat={selectedChat}
             handleBack={() => setSelectedChat(null)}
             profilePic={profilePics[selectedChat.artistId]?.profilePic}
+            socket={socket} // Pass socket to ChatWindow
           />
         )}
       </div>

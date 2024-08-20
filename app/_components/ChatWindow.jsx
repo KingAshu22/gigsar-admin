@@ -32,12 +32,12 @@ const formatTime = (timeStr) => {
   });
 };
 
-const ChatWindow = ({ selectedChat, handleBack }) => {
+const ChatWindow = ({ selectedChat, handleBack, socket }) => {
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState(selectedChat.artistId);
   const [messages, setMessages] = useState(selectedChat.message);
   const [newMessage, setNewMessage] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -66,7 +66,7 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Enter") {
-        event.preventDefault(); // Prevents the default action of the Enter key
+        event.preventDefault();
         handleSendMessage();
       }
     };
@@ -101,6 +101,19 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (socket) {
+      socket.on("message", (newMessage) => {
+        if (
+          newMessage.artistId === selectedChat.artistId &&
+          newMessage.clientId === selectedChat.clientId
+        ) {
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+        }
+      });
+    }
+  }, [socket, selectedChat]);
+
   const formatMessageContent = (content) => {
     return content
       .split("\n")
@@ -121,34 +134,37 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
   const handleSendMessage = async () => {
     if (newMessage.trim()) {
       try {
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_API}/admin-custom-message`,
-          {
-            contact: selectedChat.clientContact,
-            artistId: selectedChat.artistId,
-            message: {
-              content: newMessage,
-              time: new Date().toISOString(),
-              isSenderMe: false,
-              isUnread: false,
-            },
-          },
-          { withCredentials: true }
-        );
-
-        setMessages([
-          ...messages,
-          {
+        const messageData = {
+          contact: selectedChat.clientContact,
+          artistId: selectedChat.artistId,
+          message: {
             content: newMessage,
             time: new Date().toISOString(),
-            isSenderMe: false,
+            isSenderMe: true,
+            isUnread: false,
+          },
+        };
+
+        // await axios.post(
+        //   `${process.env.NEXT_PUBLIC_API}/admin-custom-message`,
+        //   messageData,
+        //   { withCredentials: true }
+        // );
+
+        // Emit the message to the server
+        socket.emit("sendMessage", messageData);
+
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            ...messageData.message,
+            clientId: selectedChat.clientId,
+            clientName: selectedChat.clientName,
           },
         ]);
         setNewMessage("");
       } catch (error) {
-        // Handle error
-        console.error("Error submitting form:", error);
-        toast.error("Error sending message");
+        console.error("Error sending message:", error);
       }
     }
   };
@@ -163,8 +179,8 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
           <a
             href={`https://gigsar.com/artist/${selectedChat.artistId}`}
             className="flex items-center space-x-4"
-            target="_blank" // Optional: Opens the link in a new tab
-            rel="noopener noreferrer" // Optional: Security measure for opening in a new tab
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <img
               src={profilePic}
@@ -196,7 +212,7 @@ const ChatWindow = ({ selectedChat, handleBack }) => {
               className={`p-3 rounded-lg max-w-xs ${
                 message.isSenderMe
                   ? "bg-gray-300 text-black"
-                  : " bg-primary text-white"
+                  : "bg-primary text-white"
               }`}
             >
               <div>{formatMessageContent(message.content)}</div>
