@@ -3,12 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import io from "socket.io-client";
+import { io } from "socket.io-client"; // Import Socket.io
 import ChatList from "@/app/_components/ChatList";
 import ChatWindow from "@/app/_components/ChatWindow";
 import getProfilePic from "@/app/helpers/profilePic";
-
-let socket;
 
 const Chat = () => {
   const [chats, setChats] = useState([]);
@@ -17,19 +15,60 @@ const Chat = () => {
   const router = useRouter();
 
   useEffect(() => {
-    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
     getAllMessages();
 
-    socket.on("message", (newMessage) => {
-      updateChatsWithNewMessage(newMessage);
+    // Establish socket connection
+    const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`);
+
+    // Listen for incoming messages
+    socket.on("newMessage", (newMessageData) => {
+      updateChats(newMessageData);
     });
 
-    return () => {
-      if (socket) {
-        socket.disconnect();
+    // Listen for specific messages for selected chat
+    socket.on("messageReceived", (data) => {
+      setChats((prevChats) => {
+        const chatExists = prevChats.find(
+          (chat) =>
+            chat.clientId === data.clientId && chat.artistId === data.artistId
+        );
+
+        if (chatExists) {
+          return prevChats.map((chat) =>
+            chat.clientId === data.clientId && chat.artistId === data.artistId
+              ? {
+                  ...chat,
+                  message: [...chat.message, data.message],
+                  lastMessage: data.message,
+                }
+              : chat
+          );
+        } else {
+          return [
+            {
+              artistId: data.artistId,
+              clientId: data.clientId,
+              message: [data.message],
+              lastMessage: data.message,
+            },
+            ...prevChats,
+          ];
+        }
+      });
+
+      if (selectedChat && selectedChat.artistId === data.artistId) {
+        setSelectedChat((prevSelectedChat) => ({
+          ...prevSelectedChat,
+          message: [...prevSelectedChat.message, data.message],
+        }));
       }
+    });
+
+    // Cleanup on component unmount
+    return () => {
+      socket.disconnect();
     };
-  }, []);
+  }, [selectedChat]);
 
   const getAllMessages = async () => {
     try {
@@ -72,29 +111,21 @@ const Chat = () => {
     );
   };
 
-  const updateChatsWithNewMessage = (newMessage) => {
+  const updateChats = (newMessageData) => {
     setChats((prevChats) => {
-      const updatedChats = [...prevChats];
-      const chatIndex = updatedChats.findIndex(
-        (chat) =>
-          chat.clientId === newMessage.clientId &&
-          chat.artistId === newMessage.artistId
-      );
-
-      if (chatIndex > -1) {
-        updatedChats[chatIndex].message.push(newMessage);
-        updatedChats[chatIndex].lastMessage = newMessage;
-      } else {
-        updatedChats.push({
-          artistId: newMessage.artistId,
-          clientId: newMessage.clientId,
-          clientName: newMessage.clientName,
-          clientContact: newMessage.clientContact,
-          clientEmail: newMessage.clientEmail,
-          message: [newMessage],
-          lastMessage: newMessage,
-        });
-      }
+      const updatedChats = prevChats.map((chat) => {
+        if (
+          chat.clientId === newMessageData.clientId &&
+          chat.artistId === newMessageData.artistId
+        ) {
+          return {
+            ...chat,
+            message: [...chat.message, newMessageData.message],
+            lastMessage: newMessageData.message,
+          };
+        }
+        return chat;
+      });
 
       return updatedChats.sort(
         (a, b) => new Date(b.lastMessage.time) - new Date(a.lastMessage.time)
@@ -144,7 +175,6 @@ const Chat = () => {
             selectedChat={selectedChat}
             handleBack={() => setSelectedChat(null)}
             profilePic={profilePics[selectedChat.artistId]?.profilePic}
-            socket={socket} // Pass socket to ChatWindow
           />
         )}
       </div>

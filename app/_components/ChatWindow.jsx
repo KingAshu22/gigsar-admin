@@ -6,6 +6,7 @@ import { ChevronLeft, SendHorizonal, Info } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
 import Modal from "./Modal";
+import { io } from "socket.io-client";
 
 // Utility function to capitalize each word
 const capitalizeWords = (str) => {
@@ -32,13 +33,14 @@ const formatTime = (timeStr) => {
   });
 };
 
-const ChatWindow = ({ selectedChat, handleBack, socket }) => {
+const ChatWindow = ({ selectedChat, handleBack }) => {
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState(selectedChat.artistId);
   const [messages, setMessages] = useState(selectedChat.message);
   const [newMessage, setNewMessage] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
 
+  const socket = useRef(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -50,6 +52,24 @@ const ChatWindow = ({ selectedChat, handleBack, socket }) => {
     };
 
     fetchProfile();
+
+    // Establish socket connection
+    socket.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`);
+
+    // Listen for incoming messages
+    socket.current.on("messageReceived", (data) => {
+      if (
+        data.artistId === selectedChat.artistId &&
+        data.contact === selectedChat.clientContact
+      ) {
+        setMessages((prevMessages) => [...prevMessages, data.message]);
+      }
+    });
+
+    // Cleanup on component unmount
+    return () => {
+      socket.current.disconnect();
+    };
   }, [selectedChat]);
 
   useEffect(() => {
@@ -66,7 +86,7 @@ const ChatWindow = ({ selectedChat, handleBack, socket }) => {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Enter") {
-        event.preventDefault();
+        event.preventDefault(); // Prevents the default action of the Enter key
         handleSendMessage();
       }
     };
@@ -101,19 +121,6 @@ const ChatWindow = ({ selectedChat, handleBack, socket }) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (socket) {
-      socket.on("message", (newMessage) => {
-        if (
-          newMessage.artistId === selectedChat.artistId &&
-          newMessage.clientId === selectedChat.clientId
-        ) {
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
-        }
-      });
-    }
-  }, [socket, selectedChat]);
-
   const formatMessageContent = (content) => {
     return content
       .split("\n")
@@ -140,31 +147,27 @@ const ChatWindow = ({ selectedChat, handleBack, socket }) => {
           message: {
             content: newMessage,
             time: new Date().toISOString(),
-            isSenderMe: true,
+            isSenderMe: false,
             isUnread: false,
           },
         };
 
-        // await axios.post(
-        //   `${process.env.NEXT_PUBLIC_API}/admin-custom-message`,
-        //   messageData,
-        //   { withCredentials: true }
-        // );
+        // Emit the message through Socket.io
+        socket.current.emit("sendMessage", messageData);
 
-        // Emit the message to the server
-        socket.emit("sendMessage", messageData);
-
-        setMessages((prevMessages) => [
-          ...prevMessages,
+        setMessages([
+          ...messages,
           {
-            ...messageData.message,
-            clientId: selectedChat.clientId,
-            clientName: selectedChat.clientName,
+            content: newMessage,
+            time: new Date().toISOString(),
+            isSenderMe: false,
           },
         ]);
         setNewMessage("");
       } catch (error) {
-        console.error("Error sending message:", error);
+        // Handle error
+        console.error("Error submitting form:", error);
+        toast.error("Error sending message");
       }
     }
   };
@@ -212,7 +215,7 @@ const ChatWindow = ({ selectedChat, handleBack, socket }) => {
               className={`p-3 rounded-lg max-w-xs ${
                 message.isSenderMe
                   ? "bg-gray-300 text-black"
-                  : "bg-primary text-white"
+                  : " bg-primary text-white"
               }`}
             >
               <div>{formatMessageContent(message.content)}</div>
