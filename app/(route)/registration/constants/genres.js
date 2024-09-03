@@ -21,6 +21,7 @@ const genreOptions = [
   "Classical",
   "Punjabi Folk",
   "Semi Classical",
+  "Mayra/Bhaat",
   "Metal",
   "Soft Rock",
   "Alternative Rock",
