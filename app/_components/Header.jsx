@@ -17,13 +17,18 @@ function Header() {
   const Menu = [
     {
       id: 1,
-      name: "Home",
+      name: "Admin Panel",
       path: "/",
     },
     {
       id: 2,
-      name: "Artists",
-      path: "/artists",
+      name: "Artist List",
+      path: "/artist",
+    },
+    {
+      id: 3,
+      name: "Home",
+      path: "/artist",
     },
   ];
   return (
