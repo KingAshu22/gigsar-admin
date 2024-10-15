@@ -17,6 +17,7 @@ import SearchList from "@/app/_components/SearchList";
 import { topGenres } from "../../registration/constants/topGenres";
 import topInstruments from "../../registration/constants/topInstruments";
 import ReactPlayer from "react-player/lazy";
+import SingleSearch from "@/app/_components/SingleSearch";
 
 const EditArtist = ({ params }) => {
   const [id, setId] = useState();
@@ -28,6 +29,7 @@ const EditArtist = ({ params }) => {
   const [email, setEmail] = useState("");
   const [location, setLocation] = useState("");
   const [artistType, setArtistType] = useState("");
+  const [feature, setFeature] = useState("");
   const [eventTypes, setEventTypes] = useState([]);
   const [corporateBudget, setCorporateBudget] = useState("");
   const [collegeBudget, setCollegeBudget] = useState("");
@@ -90,6 +92,7 @@ const EditArtist = ({ params }) => {
       setEmail(artistData.email);
       setLocation(artistData.location);
       setArtistType(artistData.artistType);
+      setFeature(artistData.feature);
       setCorporateBudget(artistData.corporateBudget);
       setCollegeBudget(artistData.collegeBudget);
       setWeddingBudget(artistData.price);
@@ -203,6 +206,7 @@ const EditArtist = ({ params }) => {
         email,
         location,
         artistType,
+        feature,
         eventTypes,
         corporateBudget,
         collegeBudget,
@@ -402,6 +406,23 @@ const EditArtist = ({ params }) => {
                 </option>
               </select>
             </div>
+
+            <SingleSearch
+              type={"Featured Artists"}
+              list={[
+                "",
+                "Featured House Party Artists",
+                "Featured Wedding Artists",
+              ]}
+              topList={[
+                "",
+                "Featured House Party Artists",
+                "Featured Wedding Artists",
+              ]}
+              selectedItem={feature}
+              setSelectedItem={setFeature}
+              showSearch={false}
+            />
 
             {/* Gallery Image Uploaders */}
             <div className="mb-4">
