@@ -1,5 +1,3 @@
-"use client";
-
 import {
   getSortedRowModel,
   useReactTable,
@@ -28,11 +26,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { useMediaQuery } from "react-responsive";
 
 export function DataTable({ columns, data }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   const table = useReactTable({
     data,
@@ -54,13 +54,21 @@ export function DataTable({ columns, data }) {
   });
 
   return (
-    <div>
-      <div className="flex items-center py-4">
+    <div className="w-full">
+      <div className="flex items-center py-1">
         <Input
           placeholder="Filter Artists..."
           value={table.getColumn("name")?.getFilterValue() ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+        <Input
+          placeholder="Filter Genres..."
+          value={table.getColumn("genre")?.getFilterValue() ?? ""}
+          onChange={(event) =>
+            table.getColumn("genre")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -87,13 +95,16 @@ export function DataTable({ columns, data }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
-        <Table>
+      <div className="overflow-x-auto rounded-md border">
+        <Table className="min-w-full text-sm">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    className="px-2 py-2 whitespace-nowrap"
+                  >
                     {!header.isPlaceholder &&
                       flexRender(
                         header.column.columnDef.header,
@@ -112,7 +123,10 @@ export function DataTable({ columns, data }) {
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className="px-2 py-2 whitespace-nowrap"
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

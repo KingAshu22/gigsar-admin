@@ -23,6 +23,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 const toggleShowGigsar = async (_id, setShowGigsar) => {
   try {
@@ -32,6 +33,18 @@ const toggleShowGigsar = async (_id, setShowGigsar) => {
       { withCredentials: true }
     );
     setShowGigsar(response.data.artist.showGigsar);
+  } catch (error) {
+    console.error("Error changing status:", error);
+  }
+};
+
+const updateContact = async (_id, mobile) => {
+  try {
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_API}/change-contact`,
+      { _id, mobile: mobile },
+      { withCredentials: true }
+    );
   } catch (error) {
     console.error("Error changing status:", error);
   }
@@ -81,6 +94,40 @@ const ShowGigsarCell = ({ initialShowGigsar, name, _id }) => {
   );
 };
 
+const ShowContactModal = ({ _id, contact }) => {
+  const initialContact = contact;
+  const [mobile, setMobile] = useState(contact);
+
+  return (
+    <span>
+      <AlertDialog>
+        <AlertDialogTrigger>{mobile}</AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Update Artist Contact</AlertDialogTitle>
+            <AlertDialogDescription>
+              <Input
+                type="text"
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value)}
+                placeholder="Enter contact number"
+              />
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setMobile(initialContact)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => updateContact(_id, mobile)}>
+              Update
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </span>
+  );
+};
+
 export const columns = [
   {
     accessorKey: "code",
@@ -93,6 +140,10 @@ export const columns = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
+  },
+  {
+    accessorKey: "location",
+    header: "Location",
   },
   {
     accessorKey: "profilePic",
@@ -110,6 +161,10 @@ export const columns = [
     ),
   },
   {
+    accessorKey: "gender",
+    header: "Gender",
+  },
+  {
     accessorKey: "name",
     header: ({ column }) => (
       <Button
@@ -122,8 +177,40 @@ export const columns = [
     ),
   },
   {
+    accessorKey: "genre",
+    header: "Genre",
+  },
+  {
+    accessorKey: "contact",
+    header: "Contact",
+    cell: ({ row }) => {
+      const { _id, contact } = row.original;
+      return <ShowContactModal _id={_id} contact={contact} />;
+    },
+  },
+  {
     accessorKey: "artistType",
     header: "Type",
+  },
+  {
+    accessorKey: "collegeBudget",
+    header: "College Budget",
+  },
+  {
+    accessorKey: "corporateBudget",
+    header: "Corporate Budget",
+  },
+  {
+    accessorKey: "price",
+    header: "Wedding Budget",
+  },
+  {
+    accessorKey: "ticketingConcertBudget",
+    header: "Ticketing Concert Budget",
+  },
+  {
+    accessorKey: "singerCumGuitaristBudget",
+    header: "House Budget",
   },
   {
     accessorKey: "showGigsar",
@@ -167,6 +254,11 @@ export const columns = [
               onClick={() => window.open(`/edit-artist/${artist.linkid}`)}
             >
               Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => window.open(`/${artist.linkid}/calendar`)}
+            >
+              Calendar
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
