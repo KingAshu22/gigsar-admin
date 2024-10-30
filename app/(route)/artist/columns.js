@@ -149,7 +149,7 @@ const ShowBudget = ({ _id, type, budgetName, eventsType, price }) => {
   const [budget, setBudget] = useState(price);
 
   useEffect(() => {
-    if (!eventsType.includes(type)) {
+    if (!eventsType?.includes(type)) {
       setBudget("NA");
     }
   }, [eventsType, type]);
