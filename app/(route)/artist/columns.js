@@ -1,6 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
+import { formatToIndianNumber } from "@/lib/utils";
 
 const toggleShowGigsar = async (_id, setShowGigsar) => {
   try {
@@ -47,6 +47,22 @@ const updateContact = async (_id, mobile) => {
     );
   } catch (error) {
     console.error("Error changing status:", error);
+  }
+};
+
+const updateBudget = async (_id, budget, budgetName) => {
+  try {
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_API}/change-budget`,
+      {
+        _id,
+        budget,
+        budgetName,
+      },
+      { withCredentials: true }
+    );
+  } catch (error) {
+    console.error("Error changing budget:", error);
   }
 };
 
@@ -128,22 +144,75 @@ const ShowContactModal = ({ _id, contact }) => {
   );
 };
 
+const ShowBudget = ({ _id, type, budgetName, eventsType, price }) => {
+  const initialBudget = price;
+  const [budget, setBudget] = useState(price);
+
+  useEffect(() => {
+    if (!eventsType.includes(type)) {
+      setBudget("NA");
+    }
+  }, [eventsType, type]);
+
+  return (
+    <span>
+      <AlertDialog>
+        <AlertDialogTrigger>{formatToIndianNumber(budget)}</AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Update Artist {type} Budget</AlertDialogTitle>
+            <AlertDialogDescription>
+              <p>Events Type: {eventsType}</p>
+              <Input
+                type="number"
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+                placeholder={`Enter ${type} Budget`}
+              />
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setBudget(initialBudget)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => updateBudget(_id, budget, budgetName)}
+            >
+              Update
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </span>
+  );
+};
+
 export const columns = [
   {
     accessorKey: "code",
     header: ({ column }) => (
-      <Button
+      <span
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
       >
         ID
         <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
+      </span>
     ),
   },
   {
     accessorKey: "location",
-    header: "Location",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        Location
+        <ArrowUpDown className="h-4 w-4" />
+      </span>
+    ),
   },
   {
     accessorKey: "profilePic",
@@ -162,18 +231,28 @@ export const columns = [
   },
   {
     accessorKey: "gender",
-    header: "Gender",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        Gender
+        <ArrowUpDown className="h-4 w-4" />
+      </span>
+    ),
   },
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <Button
+      <span
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
       >
         Name
         <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
+      </span>
     ),
   },
   {
@@ -190,31 +269,154 @@ export const columns = [
   },
   {
     accessorKey: "artistType",
-    header: "Type",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        Type
+        <ArrowUpDown className="h-4 w-4" />
+      </span>
+    ),
   },
   {
     accessorKey: "collegeBudget",
-    header: "College Budget",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        College
+        <ArrowUpDown className="h-4 w-4" />
+      </span>
+    ),
+    cell: ({ row }) => {
+      const { _id, eventsType, collegeBudget } = row.original;
+      return (
+        <ShowBudget
+          _id={_id}
+          type="College"
+          budgetName="collegeBudget"
+          eventsType={eventsType}
+          price={collegeBudget}
+        />
+      );
+    },
   },
   {
     accessorKey: "corporateBudget",
-    header: "Corporate Budget",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        Corporate
+        <ArrowUpDown className="h-4 w-4" />
+      </span>
+    ),
+    cell: ({ row }) => {
+      const { _id, eventsType, corporateBudget } = row.original;
+      return (
+        <ShowBudget
+          _id={_id}
+          type="Corporate"
+          budgetName="corporateBudget"
+          eventsType={eventsType}
+          price={corporateBudget}
+        />
+      );
+    },
   },
   {
     accessorKey: "price",
-    header: "Wedding Budget",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        Wedding
+        <ArrowUpDown className="h-4 w-4" />
+      </span>
+    ),
+    cell: ({ row }) => {
+      const { _id, eventsType, price } = row.original;
+      return (
+        <ShowBudget
+          _id={_id}
+          type="Wedding"
+          budgetName="price"
+          eventsType={eventsType}
+          price={price}
+        />
+      );
+    },
   },
   {
     accessorKey: "ticketingConcertBudget",
-    header: "Ticketing Concert Budget",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        Concert
+        <ArrowUpDown className="h-4 w-4" />
+      </span>
+    ),
+    cell: ({ row }) => {
+      const { _id, eventsType, ticketingConcertBudget } = row.original;
+      return (
+        <ShowBudget
+          _id={_id}
+          type="Ticketing Concert"
+          budgetName="ticketingConcertBudget"
+          eventsType={eventsType}
+          price={ticketingConcertBudget}
+        />
+      );
+    },
   },
   {
     accessorKey: "singerCumGuitaristBudget",
-    header: "House Budget",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        House
+        <ArrowUpDown className="h-4 w-4" />
+      </span>
+    ),
+    cell: ({ row }) => {
+      const { _id, eventsType, singerCumGuitaristBudget } = row.original;
+      return (
+        <ShowBudget
+          _id={_id}
+          type="House Party"
+          budgetName="singerCumGuitaristBudget"
+          eventsType={eventsType}
+          price={singerCumGuitaristBudget}
+        />
+      );
+    },
   },
   {
     accessorKey: "showGigsar",
-    header: "Status",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        Status
+        <ArrowUpDown className="h-4 w-4" />
+      </span>
+    ),
     cell: ({ row }) => {
       const { showGigsar, name, _id } = row.original;
       return (
@@ -229,13 +431,13 @@ export const columns = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
+            <span
               variant="ghost"
               className="h-8 w-8 p-0"
               aria-label="Open menu"
             >
               <MoreHorizontal className="h-4 w-4" />
-            </Button>
+            </span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>

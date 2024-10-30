@@ -62,7 +62,7 @@ export function DataTable({ columns, data }) {
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="max-w-28 mr-4"
         />
         <Input
           placeholder="Filter Genres..."
@@ -70,7 +70,7 @@ export function DataTable({ columns, data }) {
           onChange={(event) =>
             table.getColumn("genre")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="max-w-28"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -24,11 +24,9 @@ export default function RootLayout({ children }) {
             enableSystem
             disableTransitionOnChange
           >
-            <div className="md:px-20">
-              <Header />
-              {children}
-              <Toaster />
-            </div>
+            <Header />
+            {children}
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>
