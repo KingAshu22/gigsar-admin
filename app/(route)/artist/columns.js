@@ -157,7 +157,7 @@ const ShowBudget = ({ _id, type, budgetName, eventsType, price }) => {
   return (
     <span>
       <AlertDialog>
-        <AlertDialogTrigger>{budget}</AlertDialogTrigger>
+        <AlertDialogTrigger>{formatToIndianNumber(budget)}</AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Update Artist {type} Budget</AlertDialogTitle>
