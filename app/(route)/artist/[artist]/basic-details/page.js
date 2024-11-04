@@ -8,7 +8,7 @@ import { HashLoader } from "react-spinners";
 import Script from "next/script";
 import SingleSearch from "@/app/_components/SingleSearch";
 
-const basicDetails = ({ params }) => {
+const BasicDetails = ({ params }) => {
   const [id, setId] = useState();
 
   const getArtist = async () => {
@@ -383,4 +383,4 @@ const basicDetails = ({ params }) => {
   );
 };
 
-export default basicDetails;
+export default BasicDetails;
