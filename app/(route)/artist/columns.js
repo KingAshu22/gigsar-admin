@@ -453,9 +453,47 @@ export const columns = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => window.open(`/edit-artist/${artist.linkid}`)}
+              onClick={() =>
+                window.open(`/artist/${artist.linkid}/basic-details`)
+              }
             >
-              Edit
+              Edit Basic Details
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => window.open(`/artist/${artist.linkid}/event-type`)}
+            >
+              Edit Event Types
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                window.open(`/artist/${artist.linkid}/event-videos`)
+              }
+            >
+              Edit Event videos
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => window.open(`/artist/${artist.linkid}/gallery`)}
+            >
+              Edit Gallery
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => window.open(`/artist/${artist.linkid}/genre`)}
+            >
+              Edit Genre
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                window.open(`/artist/${artist.linkid}/instruments`)
+              }
+            >
+              Edit Instruments
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                window.open(`/artist/${artist.linkid}/other-details`)
+              }
+            >
+              Edit Other Details
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => window.open(`/${artist.linkid}/calendar`)}

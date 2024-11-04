@@ -1,3 +1,4 @@
+import { formatToIndianNumber } from "@/lib/utils";
 import React, { useState } from "react";
 
 const SingleSearch = ({
@@ -7,6 +8,7 @@ const SingleSearch = ({
   selectedItem,
   setSelectedItem,
   showSearch = true,
+  isOneLine = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -28,9 +30,11 @@ const SingleSearch = ({
   return (
     <div className="mt-4">
       <div className="mb-2">
-        <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
-          {type}:
-        </label>
+        {type && (
+          <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
+            {type}:
+          </label>
+        )}
         <div className="flex flex-wrap">
           {showSearch && selectedItem && (
             <div className="bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize">
@@ -38,18 +42,21 @@ const SingleSearch = ({
             </div>
           )}
           {!showSearch &&
-            topList.map((item, index) => (
+            topList?.map((item, index) => (
               <button
                 type="button"
                 key={index}
                 onClick={() => handleSelectItem(item)}
-                className={
+                className={[
                   item === selectedItem
                     ? "bg-primary text-white px-3 py-1 m-1 rounded-full flex items-center capitalize text-sm"
-                    : "bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 capitalize text-sm"
-                }
+                    : "bg-gray-200 text-gray-700 px-3 py-1 m-1 rounded-full hover:bg-gray-300 capitalize text-sm",
+                  isOneLine ? "w-screen" : "",
+                ].join(" ")}
               >
-                {item}
+                {isOneLine
+                  ? formatToIndianNumber(parseInt(item.replace(/,/g, "")))
+                  : item}
               </button>
             ))}
         </div>
@@ -79,14 +86,14 @@ const SingleSearch = ({
       )}
 
       <div className="mb-2">
-        {showSearch && (
+        {showSearch && topList && (
           <label className="block text-sm font-medium text-gray-400 mb-1">
             Suggestions:
           </label>
         )}
         <div className="flex flex-wrap">
           {showSearch &&
-            topList.map((item, index) => (
+            topList?.map((item, index) => (
               <button
                 type="button"
                 key={index}
