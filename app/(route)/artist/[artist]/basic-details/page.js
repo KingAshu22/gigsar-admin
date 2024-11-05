@@ -162,7 +162,7 @@ const BasicDetails = ({ params }) => {
       };
 
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API}/edit-basic-details/${id}`,
+        `${process.env.NEXT_PUBLIC_API}/artist-direct-registration`,
         formData,
         { withCredentials: true }
       );
@@ -191,7 +191,6 @@ const BasicDetails = ({ params }) => {
             id="artistName"
             value={artistName}
             required
-            readOnly
             onChange={(e) => setArtistName(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
@@ -236,7 +235,6 @@ const BasicDetails = ({ params }) => {
             type="text"
             id="contactNumber"
             value={contactNumber}
-            readOnly
             onChange={(e) => setContactNumber(e.target.value)}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
