@@ -116,6 +116,18 @@ export default function Home() {
             </CardContent>
           </Card>
         </Link>
+
+        <Link href="/enquiries">
+          <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+              <CardTitle>Enquiries</CardTitle>
+              <Rss className="max-sm:hidden" />
+            </CardHeader>
+            <CardContent>
+              <p className="text-body-bold">Check Enquiries</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </div>
   );
