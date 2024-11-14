@@ -128,6 +128,18 @@ export default function Home() {
             </CardContent>
           </Card>
         </Link>
+
+        <Link href="/pin">
+          <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+              <CardTitle>Update Pin</CardTitle>
+              <Rss className="max-sm:hidden" />
+            </CardHeader>
+            <CardContent>
+              <p className="text-body-bold">Change Pin</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </div>
   );
