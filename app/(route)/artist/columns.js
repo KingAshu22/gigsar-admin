@@ -24,19 +24,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { formatToIndianNumber } from "@/lib/utils";
-
-const toggleShowGigsar = async (_id, setShowGigsar) => {
-  try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API}/change-status`,
-      { _id },
-      { withCredentials: true }
-    );
-    setShowGigsar(response.data.artist.showGigsar);
-  } catch (error) {
-    console.error("Error changing status:", error);
-  }
-};
+import Modal from "@/app/_components/Modal";
 
 const updateContact = async (_id, mobile) => {
   try {
@@ -68,39 +56,80 @@ const updateBudget = async (_id, budget, budgetName) => {
 
 const ShowGigsarCell = ({ initialShowGigsar, name, _id }) => {
   const [showGigsar, setShowGigsar] = useState(initialShowGigsar);
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     setShowGigsar(initialShowGigsar);
   }, [initialShowGigsar]);
 
+  const toggleShowGigsar = async () => {
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API}/change-status`,
+        { _id },
+        { withCredentials: true }
+      );
+      setShowGigsar(response.data.artist.showGigsar); // Update with new status from the response
+    } catch (error) {
+      setError(true);
+      setErrorMessage(
+        error.response?.data?.error || "An unexpected error occurred"
+      );
+    }
+  };
+
+  // Determine the badge label based on the showGigsar status
+  const getBadgeLabel = (status) => {
+    if (status === "live") return "Live";
+    if (status === "unlisted") return "Unlisted";
+    if (status === "hidden") return "Hidden";
+    return "Hidden"; // Default to "Hidden" if status is undefined or unexpected
+  };
+
   return (
     <span>
+      {/* Error Modal */}
+      {error && (
+        <Modal
+          isOpen={error}
+          onClose={() => setError(false)}
+          title="Error"
+          description={errorMessage}
+        />
+      )}
+
+      {/* Badge and Alert Dialog */}
       <AlertDialog>
-        <AlertDialogTrigger>
-          {showGigsar ? (
-            <Badge variant="secondary">Live</Badge>
-          ) : (
-            <Badge variant="destructive">Hidden</Badge>
-          )}
+        <AlertDialogTrigger asChild>
+          <Badge
+            variant={
+              showGigsar === "live"
+                ? "secondary"
+                : showGigsar === "unlisted"
+                ? "warning"
+                : "destructive"
+            }
+          >
+            {getBadgeLabel(showGigsar)}
+          </Badge>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {showGigsar
+              {showGigsar === "live"
                 ? `Are you sure you want to hide ${name}?`
                 : `Are you sure you want to make ${name}'s profile live?`}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {showGigsar
+              {showGigsar === "live"
                 ? `This action will hide ${name} from the Gigsar website. No one can view ${name}'s profile on the Gigsar website.`
                 : `This action will make ${name}'s profile live on the Gigsar website. Everyone can view ${name}'s profile on the Gigsar website.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => toggleShowGigsar(_id, setShowGigsar)}
-            >
+            <AlertDialogAction onClick={toggleShowGigsar}>
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>

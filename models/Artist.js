@@ -37,7 +37,7 @@ const ArtistSchema = new Schema({
   reviews: Array,
   blog: String,
   showBookMySinger: Boolean,
-  showGigsar: Boolean,
+  showGigsar: String,
 });
 
 const Artist = models.Artist || model("Artist", ArtistSchema);
