@@ -139,6 +139,18 @@ const ShowGigsarCell = ({ initialShowGigsar, name, _id }) => {
   );
 };
 
+const deleteArtist = async ({ _id }) => {
+  try {
+    await axios.post(`${process.env.NEXT_PUBLIC_API}/delete-artist/${_id}`, {
+      withCredentials: true,
+    });
+    // Redirect to artist list page
+    Router.push("/artist");
+  } catch (error) {
+    console.error("Error deleting artist:", error);
+  }
+};
+
 const ShowContactModal = ({ _id, contact }) => {
   const initialContact = contact;
   const [mobile, setMobile] = useState(contact);
@@ -242,6 +254,10 @@ export const columns = [
         <ArrowUpDown className="h-4 w-4" />
       </span>
     ),
+    cell: ({ row }) => {
+      const { location } = row.original;
+      return <span>{location?.split(",")[0]}</span>;
+    },
   },
   {
     accessorKey: "profilePic",
@@ -287,6 +303,10 @@ export const columns = [
   {
     accessorKey: "genre",
     header: "Genre",
+    cell: ({ row }) => {
+      const { genre } = row.original;
+      return <span>{genre?.slice(0, 15)}</span>;
+    },
   },
   {
     accessorKey: "contact",
@@ -528,6 +548,14 @@ export const columns = [
               onClick={() => window.open(`/${artist.linkid}/calendar`)}
             >
               Calendar
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                deleteArtist(artist._id);
+              }}
+            >
+              Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

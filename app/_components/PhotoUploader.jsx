@@ -13,6 +13,8 @@ import { nanoid } from "nanoid";
 import { fromBase64 } from "@aws-sdk/util-base64";
 
 const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
+  console.log("InitialImageLink: ", initialImageLink);
+
   const [imageSrc, setImageSrc] = useState(null);
   const [cropData, setCropData] = useState(null);
   const [zoom, setZoom] = useState(1);
@@ -22,6 +24,7 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
 
   useEffect(() => {
     if (initialImageLink && initialImageLink.length > 1) {
+      setAwsLink(initialImageLink);
       setShowCroppedImage(true);
       setCropData(initialImageLink);
     }
@@ -129,10 +132,11 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
     handleProfileUpload(cropData);
   };
 
-  const handleDeleteImage = async () => {
+  const handleDeleteImage = async (link) => {
     try {
       // Delete the image from AWS S3
-      await deleteImageFromS3(awsLink);
+      console.log("Link", link);
+      await deleteImageFromS3(link);
 
       // Reset component state
       setImageSrc(null);
@@ -196,7 +200,9 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
           <div className="relative mb-4">
             <button
               className="absolute top-3 font-bold text-2xl left-32 bg-red-500 w-8 h-8 text-white pb-1 rounded-full"
-              onClick={handleDeleteImage}
+              onClick={() => {
+                handleDeleteImage(awsLink);
+              }}
               type="button"
             >
               x

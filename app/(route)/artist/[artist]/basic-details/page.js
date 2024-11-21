@@ -162,7 +162,7 @@ const BasicDetails = ({ params }) => {
       };
 
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API}/artist-direct-registration`,
+        `${process.env.NEXT_PUBLIC_API}/edit-basic-details/${id}`,
         formData,
         { withCredentials: true }
       );
@@ -334,7 +334,7 @@ const BasicDetails = ({ params }) => {
         isOpen={showConfirmationModal}
         onClose={() => setShowConfirmationModal(false)}
         title="Are you sure you want to submit the form?"
-        description={`This will create a profile for ${artistName}`}
+        description={`This will Edit ${artistName}'s Profile.`}
       >
         <div className="flex justify-between">
           <button
@@ -365,7 +365,7 @@ const BasicDetails = ({ params }) => {
         isOpen={success}
         onClose={() => setSuccess(false)}
         title="Artist Registered"
-        description={`${artistName}'s Basic Details has been saved successfully. Continue in Artist Dashboard to add more details about you`}
+        description={`${artistName}'s Basic Details has been saved successfully.`}
       >
         <div className="flex justify-center">
           <button
