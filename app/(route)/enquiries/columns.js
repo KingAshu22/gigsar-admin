@@ -38,6 +38,7 @@ const toggleShowStatus = async (
         selectedEventType: eventType,
         selectedDate: date,
         budget,
+        _id: _id,
       },
       { withCredentials: true }
     );
@@ -283,5 +284,31 @@ export const columns = [
         />
       );
     },
+  },
+  {
+    accessorKey: "reply",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        Availability
+        <ArrowUpDown className="h-4 w-4" />
+      </span>
+    ),
+  },
+  {
+    accessorKey: "replySent",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        Replied
+        <ArrowUpDown className="h-4 w-4" />
+      </span>
+    ),
   },
 ];
