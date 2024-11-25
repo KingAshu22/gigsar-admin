@@ -297,6 +297,10 @@ export const columns = [
         <ArrowUpDown className="h-4 w-4" />
       </span>
     ),
+    cell: ({ row }) => {
+      const { reply } = row.original;
+      return reply === "Yes" ? <span>Yes</span> : <span>-</span>;
+    },
   },
   {
     accessorKey: "replySent",
@@ -310,5 +314,9 @@ export const columns = [
         <ArrowUpDown className="h-4 w-4" />
       </span>
     ),
+    cell: ({ row }) => {
+      const { replySent } = row.original;
+      return replySent === "Yes" ? <span>Yes</span> : <span>-</span>;
+    },
   },
 ];
