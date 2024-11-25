@@ -141,9 +141,14 @@ const ShowGigsarCell = ({ initialShowGigsar, name, _id }) => {
 
 const deleteArtist = async ({ _id }) => {
   try {
-    await axios.post(`${process.env.NEXT_PUBLIC_API}/delete-artist/${_id}`, {
-      withCredentials: true,
-    });
+    console.log("Delete Artist ID:", _id);
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_API}/delete-artist/${_id}`,
+      {}, // Empty request body
+      {
+        withCredentials: true, // Correct placement of the configuration option
+      }
+    );
     // Redirect to artist list page
     Router.push("/artist");
   } catch (error) {
@@ -552,7 +557,7 @@ export const columns = [
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => {
-                deleteArtist(artist._id);
+                deleteArtist({ _id: artist._id }); // Pass an object with _id property
               }}
             >
               Delete
