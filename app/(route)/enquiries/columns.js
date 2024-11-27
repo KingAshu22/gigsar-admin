@@ -16,6 +16,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatToIndianNumber } from "@/lib/utils";
+import Modal from "@/app/_components/Modal";
+import ClientRegistration from "@/app/_components/ClientRegistration";
 
 const toggleShowStatus = async (
   _id,
@@ -54,6 +56,21 @@ const toggleShowStatus = async (
   }
 };
 
+const createClient = async (
+  _id,
+  setShowStatus,
+  showStatus,
+  contact,
+  linkid,
+  location,
+  eventType,
+  date,
+  budget
+) => {
+  try {
+  } catch (error) {}
+};
+
 const ShowStatus = ({
   _id,
   initialStatus,
@@ -65,6 +82,8 @@ const ShowStatus = ({
   budget,
 }) => {
   const [showStatus, setShowStatus] = useState(initialStatus);
+  const [showCreateClient, setShowCreateClient] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     setShowStatus(initialStatus);
@@ -72,6 +91,27 @@ const ShowStatus = ({
 
   return (
     <span>
+      <Modal
+        isOpen={showSuccess}
+        onClose={() => setShowSuccess(false)}
+        title="Enquiry Details Changed"
+        description="Enquiry Details has been saved and updated successfully. Now click on send enquiry button in dashboard"
+      >
+        <button
+          onClick={() => {
+            router.push("/enquiries");
+          }}
+        >
+          Enquiries Dashboard
+        </button>
+      </Modal>
+      <Modal
+        isOpen={showCreateClient}
+        onClose={() => setShowCreateClient(false)}
+        title="Create Client"
+      >
+        <ClientRegistration isModal={true} enquiryId={_id} />
+      </Modal>
       <AlertDialog>
         <AlertDialogTrigger>
           {showStatus ? (
@@ -82,15 +122,19 @@ const ShowStatus = ({
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              Are you sure you want to send message
-            </AlertDialogTitle>
+            <AlertDialogTitle>Enquiry Send Details</AlertDialogTitle>
             <AlertDialogDescription>
-              This action will send Enquiry Message to the Artist
+              Send Enquiry with same or different details
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-black"
+              onClick={() => setShowCreateClient(true)}
+            >
+              Different Details
+            </AlertDialogAction>
             <AlertDialogAction
               onClick={() =>
                 toggleShowStatus(
@@ -106,7 +150,7 @@ const ShowStatus = ({
                 )
               }
             >
-              Continue
+              Same Details
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -299,7 +343,7 @@ export const columns = [
     ),
     cell: ({ row }) => {
       const { reply } = row.original;
-      return reply === "Yes" ? <span>Yes</span> : <span>-</span>;
+      return reply?.length > 0 ? <span>{reply}</span> : <span>-</span>;
     },
   },
   {
