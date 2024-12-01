@@ -43,6 +43,7 @@
     "react-responsive": "^10.0.0",
     "react-spinners": "^0.13.8",
     "react-spreadsheet": "^0.9.5",
+    "recharts": "^2.13.3",
     "scheduler": "^0.23.2",
     "sharp": "^0.33.3",
     "slate": "^0.103.0",
