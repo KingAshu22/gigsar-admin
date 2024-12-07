@@ -520,6 +520,11 @@ export const columns = [
             >
               View
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => window.open(`/artist/${artist.linkid}`)}
+            >
+              Dashboard
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() =>
