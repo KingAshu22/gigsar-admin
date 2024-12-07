@@ -180,7 +180,22 @@ const ShowContactModal = ({ _id, contact }) => {
             <AlertDialogCancel onClick={() => setMobile(initialContact)}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction onClick={() => updateContact(_id, mobile)}>
+            <AlertDialogAction
+              onClick={() => {
+                if (
+                  mobile.length == 13 &&
+                  !mobile.includes(" ") &&
+                  mobile.startsWith("+91")
+                ) {
+                  updateContact(_id, mobile);
+                } else {
+                  setMobile(initialContact);
+                  alert(
+                    "Invalid contact number. Please enter a valid 13 digit number starting with +91."
+                  );
+                }
+              }}
+            >
               Update
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -11,6 +11,7 @@ import {
   Eye,
   EyeOff,
   UserMinus,
+  BadgePlus,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -255,6 +256,12 @@ export default function Home() {
         />
         <DashboardCard icon={LockKeyhole} title="Pin" value={pin} link="/pin" />
         <DashboardCard icon={Rss} title="Blogs" value="0" link="/blogs" />
+        <DashboardCard
+          icon={BadgePlus}
+          title="Create Artist"
+          value="Create"
+          link="/registration"
+        />
       </div>
 
       <div className="flex flex-row gap-2 mt-2">
