@@ -1,5 +1,11 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import {
+  ArrowUpDown,
+  Eye,
+  LayoutDashboard,
+  MoreHorizontal,
+  Trash,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +31,7 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { formatToIndianNumber } from "@/lib/utils";
 import Modal from "@/app/_components/Modal";
+import { Button } from "@/components/ui/button";
 
 const updateContact = async (_id, mobile) => {
   try {
@@ -495,95 +502,37 @@ export const columns = [
   },
   {
     id: "actions",
+    header: "Actions",
     cell: ({ row }) => {
       const artist = row.original;
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <span
-              variant="ghost"
-              className="h-8 w-8 p-0"
-              aria-label="Open menu"
-            >
-              <MoreHorizontal className="h-4 w-4" />
-            </span>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() =>
-                window.open(
-                  `https://gigsar.com/artist/${artist.linkid}`,
-                  "_blank"
-                )
-              }
-            >
-              View
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => window.open(`/artist/${artist.linkid}`)}
-            >
-              Dashboard
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() =>
-                window.open(`/artist/${artist.linkid}/basic-details`)
-              }
-            >
-              Edit Basic Details
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => window.open(`/artist/${artist.linkid}/event-type`)}
-            >
-              Edit Event Types
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() =>
-                window.open(`/artist/${artist.linkid}/event-videos`)
-              }
-            >
-              Edit Event videos
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => window.open(`/artist/${artist.linkid}/gallery`)}
-            >
-              Edit Gallery
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => window.open(`/artist/${artist.linkid}/genre`)}
-            >
-              Edit Genre
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() =>
-                window.open(`/artist/${artist.linkid}/instruments`)
-              }
-            >
-              Edit Instruments
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() =>
-                window.open(`/artist/${artist.linkid}/other-details`)
-              }
-            >
-              Edit Other Details
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => window.open(`/${artist.linkid}/calendar`)}
-            >
-              Calendar
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                deleteArtist({ _id: artist._id }); // Pass an object with _id property
-              }}
-            >
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex flex-rows gap-2">
+          <Button
+            className="px-2 py-1 bg-green-800"
+            onClick={() =>
+              window.open(
+                `https://gigsar.com/artist/${artist.linkid}`,
+                "_blank"
+              )
+            }
+          >
+            <Eye className="w-[20px] h-[20px]" />
+          </Button>
+          <Button
+            className="px-2 py-1 bg-black"
+            onClick={() => window.open(`/artist/${artist.linkid}`)}
+          >
+            <LayoutDashboard className="w-[20px] h-[20px]" />
+          </Button>
+          <Button
+            className="px-2 py-1"
+            onClick={() => {
+              deleteArtist({ _id: artist._id }); // Pass an object with _id property
+            }}
+          >
+            <Trash className="w-[20px] h-[20px]" />
+          </Button>
+        </div>
       );
     },
   },
