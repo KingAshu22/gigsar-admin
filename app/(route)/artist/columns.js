@@ -32,6 +32,8 @@ import { Input } from "@/components/ui/input";
 import { formatToIndianNumber } from "@/lib/utils";
 import Modal from "@/app/_components/Modal";
 import { Button } from "@/components/ui/button";
+import { Refresh } from "@/app/_components/Refresh";
+import toast from "react-hot-toast";
 
 const updateContact = async (_id, mobile) => {
   try {
@@ -146,7 +148,7 @@ const ShowGigsarCell = ({ initialShowGigsar, name, _id }) => {
   );
 };
 
-const deleteArtist = async ({ _id }) => {
+const deleteArtist = async ({ _id, artistName }) => {
   try {
     console.log("Delete Artist ID:", _id);
     await axios.post(
@@ -157,7 +159,7 @@ const deleteArtist = async ({ _id }) => {
       }
     );
     // Redirect to artist list page
-    Router.push("/artist");
+    toast.success(`${artistName} Deleted Successfully! Please Refresh`);
   } catch (error) {
     console.error("Error deleting artist:", error);
   }
@@ -519,19 +521,36 @@ export const columns = [
             <Eye className="w-[20px] h-[20px]" />
           </Button>
           <Button
-            className="px-2 py-1 bg-black"
+            className="px-2 py-1 bg-gray-600"
             onClick={() => window.open(`/artist/${artist.linkid}`)}
           >
             <LayoutDashboard className="w-[20px] h-[20px]" />
           </Button>
-          <Button
-            className="px-2 py-1"
-            onClick={() => {
-              deleteArtist({ _id: artist._id }); // Pass an object with _id property
-            }}
-          >
-            <Trash className="w-[20px] h-[20px]" />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger className="bg-primary rounded-lg px-2 py-1 text-white">
+              <Trash className="w-[20px] h-[20px]" />
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete{" "}
+                  {artist.name} account and remove data completely from the
+                  servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    deleteArtist({ _id: artist._id, artistName: artist.name });
+                  }}
+                >
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       );
     },
