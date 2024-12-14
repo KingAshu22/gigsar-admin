@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   MoreHorizontal,
   Trash,
+  Pencil,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -519,6 +520,14 @@ export const columns = [
             }
           >
             <Eye className="w-[20px] h-[20px]" />
+          </Button>
+          <Button
+            className="px-2 py-1 bg-blue-800"
+            onClick={() =>
+              window.open(`/edit-artist/${artist.linkid}`, "_blank")
+            }
+          >
+            <Pencil className="w-[20px] h-[20px]" />
           </Button>
           <Button
             className="px-2 py-1 bg-gray-600"
