@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Trash } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,6 +18,7 @@ import Link from "next/link";
 import { formatToIndianNumber } from "@/lib/utils";
 import Modal from "@/app/_components/Modal";
 import ClientRegistration from "@/app/_components/ClientRegistration";
+import toast from "react-hot-toast";
 
 const toggleShowStatus = async (
   _id,
@@ -51,6 +52,21 @@ const toggleShowStatus = async (
       { withCredentials: true }
     );
     if (!showStatus) setShowStatus(!showStatus);
+  } catch (error) {
+    console.error("Error changing status:", error);
+  }
+};
+
+const deleteEnquiry = async (_id) => {
+  try {
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_API}/delete-enquiry`,
+      {
+        _id: _id,
+      },
+      { withCredentials: true }
+    );
+    toast.success("Enquiry Deleted Successfully, Please Refresh 🔄...");
   } catch (error) {
     console.error("Error changing status:", error);
   }
@@ -156,6 +172,34 @@ const ShowStatus = ({
         </AlertDialogContent>
       </AlertDialog>
     </span>
+  );
+};
+
+const ShowDelete = ({ _id }) => {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger className="bg-red-600 p-1 rounded-lg text-white">
+        <Trash />
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are You Sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are You Sure, You Want to Delete this Enquiry. This cannot be
+            undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            className="bg-red-600"
+            onClick={() => deleteEnquiry(_id)}
+          >
+            Delete Enquiry
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 
@@ -361,6 +405,14 @@ export const columns = [
     cell: ({ row }) => {
       const { replySent } = row.original;
       return replySent === "Yes" ? <span>Yes</span> : <span>-</span>;
+    },
+  },
+  {
+    accessorKey: "_id",
+    header: "Delete",
+    cell: ({ row }) => {
+      const { _id } = row.original;
+      return <ShowDelete _id={_id} />;
     },
   },
 ];
