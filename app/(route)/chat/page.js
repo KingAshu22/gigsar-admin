@@ -135,18 +135,34 @@ const Chat = () => {
 
   useEffect(() => {
     const fetchProfilePics = async () => {
-      const picPromises = chats.map(async (chat) => {
-        const { name, profilePic } = await getProfilePic(chat.artistId);
-        return { artistId: chat.artistId, name, profilePic };
-      });
+      try {
+        const picPromises = chats.map(async (chat) => {
+          const result = await getProfilePic(chat.artistId);
 
-      const pics = await Promise.all(picPromises);
-      const picMap = pics.reduce((acc, { artistId, name, profilePic }) => {
-        acc[artistId] = { name, profilePic };
-        return acc;
-      }, {});
+          // Handle null or undefined response
+          if (!result) {
+            return {
+              artistId: chat.artistId,
+              name: "Unknown",
+              profilePic: null,
+            };
+          }
 
-      setProfilePics(picMap);
+          const { name = "Unknown", profilePic = null } = result; // Default values
+          return { artistId: chat.artistId, name, profilePic };
+        });
+
+        const pics = await Promise.all(picPromises);
+
+        const picMap = pics.reduce((acc, { artistId, name, profilePic }) => {
+          acc[artistId] = { name, profilePic };
+          return acc;
+        }, {});
+
+        setProfilePics(picMap);
+      } catch (error) {
+        console.error("Error fetching profile pictures:", error);
+      }
     };
 
     fetchProfilePics();

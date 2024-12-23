@@ -19,6 +19,7 @@ import { formatToIndianNumber } from "@/lib/utils";
 import Modal from "@/app/_components/Modal";
 import ClientRegistration from "@/app/_components/ClientRegistration";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const toggleShowStatus = async (
   _id,
@@ -66,25 +67,9 @@ const deleteEnquiry = async (_id) => {
       },
       { withCredentials: true }
     );
-    toast.success("Enquiry Deleted Successfully, Please Refresh 🔄...");
   } catch (error) {
     console.error("Error changing status:", error);
   }
-};
-
-const createClient = async (
-  _id,
-  setShowStatus,
-  showStatus,
-  contact,
-  linkid,
-  location,
-  eventType,
-  date,
-  budget
-) => {
-  try {
-  } catch (error) {}
 };
 
 const ShowStatus = ({
@@ -176,6 +161,7 @@ const ShowStatus = ({
 };
 
 const ShowDelete = ({ _id }) => {
+  const router = useRouter();
   return (
     <AlertDialog>
       <AlertDialogTrigger className="bg-red-600 p-1 rounded-lg text-white">
@@ -193,7 +179,13 @@ const ShowDelete = ({ _id }) => {
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             className="bg-red-600"
-            onClick={() => deleteEnquiry(_id)}
+            onClick={async () => {
+              await deleteEnquiry(_id);
+              toast.success(
+                "Enquiry Deleted Successfully, Please Refresh 🔄..."
+              );
+              router.refresh();
+            }}
           >
             Delete Enquiry
           </AlertDialogAction>

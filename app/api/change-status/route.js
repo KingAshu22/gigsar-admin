@@ -5,30 +5,26 @@ import Artist from "@/models/Artist";
 connectToDB;
 
 export async function PUT(req) {
-  if (req.method === "PUT") {
-    const { _id } = req.body;
+  const { _id } = req.body;
 
-    try {
-      // Find the artist by _id
-      const artist = await Artist.findById(_id);
+  try {
+    // Find the artist by _id
+    const artist = await Artist.findById(_id);
 
-      if (!artist) {
-        return NextResponse.status(404).json({ error: "Artist not found" });
-      }
-
-      // Toggle the value of showGigsar
-      artist.showGigsar = !artist.showGigsar;
-
-      // Save the updated artist
-      await artist.save();
-
-      // Send back the updated artist
-      NextResponse.status(200).json({ artist });
-    } catch (error) {
-      console.error(error);
-      return NextResponse.error("Server Error", { status: 500 });
+    if (!artist) {
+      return NextResponse.status(404).json({ error: "Artist not found" });
     }
-  } else {
-    return NextResponse.error("Method Not Allowed", { status: 405 });
+
+    // Toggle the value of showGigsar
+    artist.showGigsar = !artist.showGigsar;
+
+    // Save the updated artist
+    await artist.save();
+
+    // Send back the updated artist
+    NextResponse.status(200).json({ artist });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.error("Server Error", { status: 500 });
   }
 }

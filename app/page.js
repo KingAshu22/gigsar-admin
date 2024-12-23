@@ -12,6 +12,8 @@ import {
   EyeOff,
   UserMinus,
   BadgePlus,
+  Ticket,
+  MessagesSquare,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -256,11 +258,18 @@ export default function Home() {
         />
         <DashboardCard icon={LockKeyhole} title="Pin" value={pin} link="/pin" />
         <DashboardCard icon={Rss} title="Blogs" value="0" link="/blogs" />
+        <DashboardCard icon={MessagesSquare} title="Chat" link="/chat" />
         <DashboardCard
           icon={BadgePlus}
           title="Create Artist"
-          value="Create"
+          value=""
           link="/registration"
+        />
+        <DashboardCard
+          icon={Ticket}
+          title="Create Event"
+          value=""
+          link="/create-event"
         />
       </div>
 
