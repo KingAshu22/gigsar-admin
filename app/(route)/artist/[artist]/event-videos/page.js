@@ -166,7 +166,7 @@ const EditArtist = ({ params }) => {
                   </label>
                   {links.map((link, index) => (
                     <div key={index} className="mb-4">
-                      {link.length > 1 && (
+                      {link?.length > 1 && (
                         <>
                           <ReactPlayer
                             url={`https://www.youtube.com/watch?v=${link}`}
