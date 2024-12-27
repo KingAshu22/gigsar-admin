@@ -5,7 +5,23 @@ import GigsarBlog from "@/models/GigsarBlog";
 // Ensure the database connection is established
 await connectToDB();
 
-// POST: Create a new event
+// GET: Fetch all blogs
+export async function GET() {
+  try {
+    // Fetch all blogs from the database
+    const blogs = await GigsarBlog.find();
+
+    // Return the blogs
+    return NextResponse.json(blogs, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching blogs:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch blogs" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req) {
   try {
     // Parse the request body
@@ -49,23 +65,6 @@ export async function POST(req) {
     console.error("Error creating Blog:", error);
     return NextResponse.json(
       { error: "Failed to create Blog" },
-      { status: 500 }
-    );
-  }
-}
-
-// GET: Fetch all blogs
-export async function GET() {
-  try {
-    // Fetch all blogs from the database
-    const blogs = await GigsarBlog.find();
-
-    // Return the blogs
-    return NextResponse.json(blogs, { status: 200 });
-  } catch (error) {
-    console.error("Error fetching blogs:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch blogs" },
       { status: 500 }
     );
   }
