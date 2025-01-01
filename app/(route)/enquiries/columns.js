@@ -329,6 +329,23 @@ export const columns = [
     },
   },
   {
+    accessorKey: "paymentDone",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        Enquiry Type
+        <ArrowUpDown className="h-4 w-4" />
+      </span>
+    ),
+    cell: ({ row }) => {
+      const { paymentDone } = row.original;
+      return <p>{paymentDone ? "Premium" : "General"}</p>;
+    },
+  },
+  {
     accessorKey: "enquirySent",
     header: ({ column }) => (
       <span
