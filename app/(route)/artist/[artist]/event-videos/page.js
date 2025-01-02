@@ -164,36 +164,45 @@ const EditArtist = ({ params }) => {
                   <label className="block text-lg mb-2 font-bold text-gray-700">
                     {label}
                   </label>
-                  {links.map((link, index) => (
-                    <div key={index} className="mb-4">
-                      {link?.length > 1 && (
-                        <>
-                          <ReactPlayer
-                            url={`https://www.youtube.com/watch?v=${link}`}
-                            width="480px"
-                            height="270px"
-                            class="desktop"
-                          />
+                  <div className="grid md:grid-cols-2 gap-2">
+                    {links.map((link, index) => (
+                      <div key={index} className="mb-4">
+                        {link?.length > 1 && (
+                          <>
+                            <ReactPlayer
+                              url={`https://www.youtube.com/watch?v=${link}`}
+                              width="480px"
+                              height="270px"
+                              controls={true}
+                              class="desktop"
+                            />
 
-                          <ReactPlayer
-                            url={`https://www.youtube.com/watch?v=${link}`}
-                            width="312px"
-                            height="175.5px"
-                            class="mobile"
-                          />
-                        </>
-                      )}
-                      <input
-                        type="text"
-                        value={link}
-                        autoComplete="off"
-                        className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        onChange={(e) =>
-                          handleLinkChange(index, e.target.value, links, setter)
-                        }
-                      />
-                    </div>
-                  ))}
+                            <ReactPlayer
+                              url={`https://www.youtube.com/watch?v=${link}`}
+                              width="312px"
+                              height="175.5px"
+                              controls={true}
+                              class="mobile"
+                            />
+                          </>
+                        )}
+                        <input
+                          type="text"
+                          value={link}
+                          autoComplete="off"
+                          className="mt-0 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          onChange={(e) =>
+                            handleLinkChange(
+                              index,
+                              e.target.value,
+                              links,
+                              setter
+                            )
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <Button type="button" onClick={() => addMoreLinks(setter)}>
                   Add Link

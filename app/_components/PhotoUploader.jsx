@@ -21,6 +21,8 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
   const [showModal, setShowModal] = useState(false);
   const [showCroppedImage, setShowCroppedImage] = useState(false);
   const [awsLink, setAwsLink] = useState(initialImageLink);
+  const [isFirstDrop, setIsFirstDrop] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (initialImageLink && initialImageLink.length > 1) {
@@ -37,10 +39,20 @@ const PhotoUploader = ({ artistName, setProfilePic, initialImageLink }) => {
       reader.onloadend = () => {
         setImageSrc(reader.result);
         setShowModal(true);
-        setCropData(reader.result);
+        if (isFirstDrop) {
+          handleImageZoom();
+          setIsFirstDrop(false);
+        }
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleImageZoom = async () => {
+    setZoom(2);
+    setTimeout(() => {
+      setZoom(1);
+    }, 500);
   };
 
   const onCropComplete = async (croppedArea) => {
