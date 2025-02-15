@@ -25,8 +25,15 @@ export async function GET() {
 export async function POST(req) {
   try {
     // Parse the request body
-    const { metaTitle, metaDescription, keywords, pageTitle, videos, content } =
-      await req.json();
+    const {
+      metaTitle,
+      metaDescription,
+      keywords,
+      pageTitle,
+      link,
+      videos,
+      content,
+    } = await req.json();
 
     // Validate the input
     if (
@@ -34,13 +41,14 @@ export async function POST(req) {
       !metaDescription ||
       !keywords ||
       !pageTitle ||
+      !link ||
       !videos ||
       !content
     ) {
       return NextResponse.json(
         {
           error:
-            "All fields (metaTitle, metaDescription, keywords, pageTitle, videos and content) are required",
+            "All fields (metaTitle, metaDescription, keywords, pageTitle, link, videos and content) are required",
         },
         { status: 400 }
       );
@@ -55,6 +63,7 @@ export async function POST(req) {
       keywords,
       linkid,
       pageTitle,
+      link,
       videos,
       content,
     });

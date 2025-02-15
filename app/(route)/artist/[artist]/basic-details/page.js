@@ -25,6 +25,15 @@ const BasicDetails = ({ params }) => {
       setContactNumber(artistData.contact);
       setEmail(artistData.email);
       setArtistType(artistData.artistType);
+      setManagerName(artistData.managerName);
+      setManagerContact(artistData.managerContact);
+
+      // Check if managerName exists to set hasManager to true
+      if (artistData.managerName) {
+        setHasManager(true); // Set hasManager to true when managerName is present
+      } else {
+        setHasManager(false); // Otherwise set hasManager to false
+      }
 
       // Split location into parts
       const locationParts = artistData.location
@@ -72,6 +81,14 @@ const BasicDetails = ({ params }) => {
   const [selectedState, setSelectedState] = useState();
   const [selectedCity, setSelectedCity] = useState();
   const router = useRouter();
+
+  const [hasManager, setHasManager] = useState(false); // Track if the user has an artist manager
+  const [managerName, setManagerName] = useState("");
+  const [managerContact, setManagerContact] = useState("");
+
+  const handleManagerChange = (e) => {
+    setHasManager(e.target.value === "true"); // Update based on 'Yes' or 'No' selection
+  };
 
   useEffect(() => {
     getCountries();
@@ -159,6 +176,8 @@ const BasicDetails = ({ params }) => {
         email,
         location,
         artistType,
+        managerName,
+        managerContact,
       };
 
       await axios.post(
@@ -314,6 +333,75 @@ const BasicDetails = ({ params }) => {
             </option>
           </select>
         </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Do you have an Artist Manager?
+          </label>
+          <div className="flex space-x-4 mt-2">
+            <label>
+              <input
+                type="radio"
+                name="hasManager"
+                value="true"
+                onChange={handleManagerChange}
+                checked={hasManager === true} // Ensure "Yes" is selected if hasManager is true
+                className="mr-2"
+              />
+              Yes
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="hasManager"
+                value="false"
+                onChange={handleManagerChange}
+                checked={hasManager === false} // Ensure "No" is selected if hasManager is false
+                className="mr-2"
+              />
+              No
+            </label>
+          </div>
+        </div>
+
+        {hasManager && (
+          <>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Artist Manager Name
+              </label>
+              <input
+                type="text"
+                value={managerName}
+                onChange={(e) => setManagerName(e.target.value)}
+                className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter Manager's Name"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Artist Manager Contact Number
+              </label>
+              <input
+                type="number"
+                id="mobile-input"
+                value={managerContact}
+                maxLength={10}
+                onChange={(e) => {
+                  const input = e.target.value;
+                  const numericInput = input.replace(/[^0-9]/g, "");
+                  if (numericInput.length <= 10) {
+                    setManagerContact(numericInput);
+                  }
+                }}
+                className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter Manager's Contact Number"
+              />
+            </div>
+          </>
+        )}
+
         {artistName &&
           gender &&
           email &&

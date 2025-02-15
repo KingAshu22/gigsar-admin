@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Trash } from "lucide-react";
+import { ArrowUpDown, Eye, Pencil, Trash } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +20,7 @@ import Modal from "@/app/_components/Modal";
 import ClientRegistration from "@/app/_components/ClientRegistration";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 const deleteBlog = async (_id) => {
   try {
@@ -87,6 +88,30 @@ export const columns = [
         <ArrowUpDown className="h-4 w-4" />
       </span>
     ),
+  },
+  {
+    accessorKey: "linkid",
+    header: "Edit",
+    cell: ({ row }) => {
+      const { linkid } = row.original;
+      return (
+        <div className="flex items-center gap-2">
+          <Button>
+            <Link href={`/blogs/${linkid}`} target="_blank">
+              <Pencil />
+            </Link>
+          </Button>
+          <Button className="bg-green-400">
+            <Link
+              href={`https://www.gigsar.com/blogs/${linkid}`}
+              target="_blank"
+            >
+              <Eye />
+            </Link>
+          </Button>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "_id",

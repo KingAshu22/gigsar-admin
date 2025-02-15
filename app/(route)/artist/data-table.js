@@ -3,8 +3,6 @@ import {
   useReactTable,
   flexRender,
   getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
   getPaginationRowModel,
   getFilteredRowModel,
 } from "@tanstack/react-table";
@@ -28,6 +26,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useMediaQuery } from "react-responsive";
 import { DataTablePagination } from "./data-table-pagination";
+import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 
 export function DataTable({ columns, data }) {
   const [sorting, setSorting] = useState([]);
@@ -45,14 +44,30 @@ export function DataTable({ columns, data }) {
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
       sorting,
       columnFilters,
       columnVisibility,
     },
   });
+
+  // Handle filter changes based on event type selection
+  const handleEventTypeFilterChange = (selectedValues) => {
+    const eventFilter = selectedValues.length > 0 ? selectedValues : undefined;
+    setColumnFilters((prevFilters) => {
+      const newFilters = prevFilters.filter(
+        (filter) => filter.id !== "eventsType"
+      );
+      if (eventFilter) {
+        newFilters.push({
+          id: "eventsType",
+          value: eventFilter,
+          operator: "includes", // Ensures partial matching
+        });
+      }
+      return newFilters;
+    });
+  };
 
   return (
     <div className="w-full">
@@ -70,6 +85,14 @@ export function DataTable({ columns, data }) {
           value={table.getColumn("genre")?.getFilterValue() ?? ""}
           onChange={(event) =>
             table.getColumn("genre")?.setFilterValue(event.target.value)
+          }
+          className="max-w-28"
+        />
+        <Input
+          placeholder="Filter Events..."
+          value={table.getColumn("events")?.getFilterValue() ?? ""}
+          onChange={(event) =>
+            table.getColumn("events")?.setFilterValue(event.target.value)
           }
           className="max-w-28"
         />

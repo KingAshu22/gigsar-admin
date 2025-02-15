@@ -5,6 +5,7 @@ const GigsarBlogSchema = new Schema({
   keywords: String,
   linkid: String,
   pageTitle: String,
+  link: String,
   videos: Array,
   content: String,
 });

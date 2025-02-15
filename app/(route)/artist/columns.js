@@ -221,7 +221,7 @@ const ShowBudget = ({ _id, type, budgetName, eventsType, price }) => {
 
   useEffect(() => {
     if (!eventsType?.includes(type)) {
-      setBudget("NA");
+      setBudget("0");
     }
   }, [eventsType, type]);
 
@@ -331,6 +331,14 @@ export const columns = [
     ),
   },
   {
+    accessorKey: "eventsType",
+    header: "Events",
+    cell: ({ row }) => {
+      const { eventsType } = row.original;
+      return <span>{eventsType?.slice(0, 15)}</span>;
+    },
+  },
+  {
     accessorKey: "genre",
     header: "Genre",
     cell: ({ row }) => {
@@ -345,6 +353,32 @@ export const columns = [
       const { _id, contact } = row.original;
       return <ShowContactModal _id={_id} contact={contact} />;
     },
+  },
+  {
+    accessorKey: "managerName",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        Mr. Name
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </span>
+    ),
+  },
+  {
+    accessorKey: "managerContact",
+    header: ({ column }) => (
+      <span
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="flex items-center gap-1"
+      >
+        Mr. Contact
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </span>
+    ),
   },
   {
     accessorKey: "artistType",
@@ -482,6 +516,12 @@ export const columns = [
           price={singerCumGuitaristBudget}
         />
       );
+    },
+    // Sorting logic for this column
+    sortType: (rowA, rowB, columnId) => {
+      const budgetA = parseBudget(rowA.values[columnId]);
+      const budgetB = parseBudget(rowB.values[columnId]);
+      return budgetA - budgetB;
     },
   },
   {
