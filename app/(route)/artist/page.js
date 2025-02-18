@@ -4,15 +4,30 @@ import axios from "axios";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { HashLoader } from "react-spinners";
+import SingleSearch from "@/app/_components/SingleSearch";
 
 export default function Page() {
   const [artists, setArtists] = useState([]);
+  const [filteredArtists, setFilteredArtists] = useState([]);
+  const [artistType, setArtistType] = useState("All");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchArtists();
   }, []);
+
+  useEffect(() => {
+    if (artistType === "All") {
+      fetchArtists();
+      setFilteredArtists(artists);
+    } else {
+      fetchArtists();
+      setFilteredArtists(
+        artists.filter((artist) => artist.artistType === artistType)
+      );
+    }
+  }, [artistType]);
 
   const fetchArtists = async () => {
     setLoading(true);
@@ -46,7 +61,14 @@ export default function Page() {
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={artists} />
+      <SingleSearch
+        type={"Artist Type"}
+        topList={["All", "singer-band", "dj", "instrumentalist", "comedian"]}
+        selectedItem={artistType}
+        setSelectedItem={setArtistType}
+        showSearch={false}
+      />
+      <DataTable columns={columns} data={filteredArtists} />
     </div>
   );
 }
