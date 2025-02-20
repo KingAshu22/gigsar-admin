@@ -1457,6 +1457,7 @@ const genreOptions = [
   "Romantic comedy",
   "Sitcom",
   "Clean Comedy",
+  "Rap",
 ];
 
 export default genreOptions;
