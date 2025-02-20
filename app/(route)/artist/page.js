@@ -63,7 +63,14 @@ export default function Page() {
     <div className="container mx-auto py-10">
       <SingleSearch
         type={"Artist Type"}
-        topList={["All", "singer-band", "dj", "instrumentalist", "comedian"]}
+        topList={[
+          "All",
+          "singer-band",
+          "dj",
+          "instrumentalist",
+          "comedian",
+          "rapper",
+        ]}
         selectedItem={artistType}
         setSelectedItem={setArtistType}
         showSearch={false}
