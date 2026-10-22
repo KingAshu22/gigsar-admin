@@ -13,6 +13,7 @@ import {
   TicketCheck,
   User,
   MessageCircle, // Added for the chat card icon
+  Contact,
 } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -189,6 +190,13 @@ function ArtistDashboard({ params }) {
           artist?.training ||
           artist?.blog
         ),
+      },      {
+        field: "contactVisibility",
+        href: `/artist/${artist?.linkid}/contact-visibility`,
+        icon: <Contact className="size-10" />,
+        title: "Public Contact Options",
+        description: "Choose Email, Call, WhatsApp or Enquiry only",
+        completed: true,
       },
     ];
 

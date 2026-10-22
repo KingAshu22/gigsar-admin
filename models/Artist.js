@@ -8,6 +8,7 @@ const ArtistSchema = new Schema({
   name: String,
   profilePic: String,
   contact: String,
+  email: String,
   location: String,
   price: String,
   corporateBudget: String,
@@ -36,6 +37,12 @@ const ArtistSchema = new Schema({
   testLinks: Array,
   reviews: Array,
   blog: String,
+  contactVisibility: {
+    email: Boolean,
+    call: Boolean,
+    whatsapp: Boolean,
+    enquiryOnly: Boolean,
+  },
   showBookMySinger: Boolean,
   showGigsar: String,
 });
